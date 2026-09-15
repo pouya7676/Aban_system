@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>حسابداری، انبارداری و صدور فاکتور</title>
+  <title>حسابداری، انبارداری و مدیریت حساب‌ها</title>
   
-  <!-- کتابخانه‌های مورد نیاز -->
+  <!-- کتابخانه‌های ضروری -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -36,7 +36,7 @@
       user-select: none;
     }
     .pb-safe {
-      padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 84px);
+      padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 88px);
     }
   </style>
 </head>
@@ -52,7 +52,7 @@
       </div>
       <div>
         <h1 class="font-black text-sm sm:text-base leading-tight" id="store-title">حسابداری و انبارداری</h1>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400" id="header-date">در حال دریافت تاریخ...</p>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400" id="header-date">در حال بارگذاری...</p>
       </div>
     </div>
     
@@ -128,15 +128,43 @@
         </div>
       </div>
 
+      <!-- وضعیت بدهی و طلب در داشبورد -->
+      <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-4 shadow-md space-y-3">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-base">💼</span>
+            <h2 class="font-bold text-xs">خلاصه دفتر حساب و طلب/بدهی</h2>
+          </div>
+          <button onclick="switchTab('debts')" class="text-[11px] text-indigo-300 hover:text-white font-bold flex items-center gap-0.5">
+            <span>مدیریت حساب‌ها</span>
+            <span>←</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-white/5 rounded-2xl p-2.5">
+            <span class="text-[10px] text-emerald-300 block mb-0.5">طلب‌های شما</span>
+            <b class="text-xs font-black text-emerald-400" id="dash-receivables">۰</b>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-2.5">
+            <span class="text-[10px] text-rose-300 block mb-0.5">بدهی‌های شما</span>
+            <b class="text-xs font-black text-rose-400" id="dash-payables">۰</b>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-2.5">
+            <span class="text-[10px] text-slate-300 block mb-0.5">تراز خالص</span>
+            <b class="text-xs font-black" id="dash-net-balance">۰</b>
+          </div>
+        </div>
+      </div>
+
       <!-- دکمه‌های اقدام سریع -->
       <div class="grid grid-cols-2 gap-3 pt-1">
         <button onclick="switchTab('invoice')" class="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 active:scale-95 transition-all">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           <span>صدور فاکتور مشتری</span>
         </button>
-        <button onclick="openAddProductModal()" class="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-900 text-white dark:bg-slate-800 dark:hover:bg-slate-700 font-bold text-xs shadow-md active:scale-95 transition-all">
+        <button onclick="openAddDebtModal()" class="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-600/20 active:scale-95 transition-all">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>افزودن کالای جدید</span>
+          <span>ثبت بدهی / طلب جدید</span>
         </button>
       </div>
 
@@ -169,7 +197,54 @@
       <div id="inventory-list" class="space-y-3"></div>
     </section>
 
-    <!-- ۳. تب صدور فاکتور مشتری -->
+    <!-- ۳. تب دفتر حساب و بدهی/طلبکاری (جدید و پیشرفته) -->
+    <section id="tab-debts" class="hidden space-y-4">
+      <!-- کارت‌های آمار وضعیت حساب‌ها -->
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 p-3 rounded-2xl shadow-xs text-center">
+          <span class="text-[11px] font-bold text-emerald-600 block mb-1">طلب شما از دیگران</span>
+          <div class="text-sm font-black text-emerald-600" id="total-receivables-badge">۰</div>
+          <span class="text-[9px] text-slate-400">تومان</span>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-800/60 p-3 rounded-2xl shadow-xs text-center">
+          <span class="text-[11px] font-bold text-rose-600 block mb-1">بدهی شما به دیگران</span>
+          <div class="text-sm font-black text-rose-600" id="total-payables-badge">۰</div>
+          <span class="text-[9px] text-slate-400">تومان</span>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800/60 p-3 rounded-2xl shadow-xs text-center">
+          <span class="text-[11px] font-bold text-indigo-600 block mb-1">تراز خالص حساب‌ها</span>
+          <div class="text-sm font-black text-indigo-600" id="net-balance-badge">۰</div>
+          <span class="text-[9px] text-slate-400">تومان</span>
+        </div>
+      </div>
+
+      <!-- کنترل‌ها و دکمه افزودن سطر حساب -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex gap-1 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px]">
+          <button onclick="setDebtFilter('all')" id="debt-filter-all" class="px-2.5 py-1.5 rounded-xl font-bold bg-indigo-600 text-white transition-all">همه</button>
+          <button onclick="setDebtFilter('receivable')" id="debt-filter-receivable" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-600 dark:text-slate-300">طلب‌ها</button>
+          <button onclick="setDebtFilter('payable')" id="debt-filter-payable" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-600 dark:text-slate-300">بدهی‌ها</button>
+        </div>
+
+        <button onclick="openAddDebtModal()" class="px-3.5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl text-xs font-bold flex items-center gap-1 shadow-md shadow-violet-600/20 active:scale-95 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>+ سطر حساب جدید</span>
+        </button>
+      </div>
+
+      <!-- جستجوی حساب اشخاص -->
+      <div class="relative">
+        <input type="text" id="debt-search" oninput="renderDebts()" placeholder="جستجوی شخص یا شرح حساب..." class="w-full pl-3 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs focus:ring-2 focus:ring-violet-500 focus:outline-hidden">
+        <svg class="w-4 h-4 absolute right-3 top-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+
+      <!-- لیست حساب‌ها -->
+      <div id="debts-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ۴. تب صدور فاکتور مشتری -->
     <section id="tab-invoice" class="hidden space-y-4">
       <div class="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -256,7 +331,7 @@
       </div>
     </section>
 
-    <!-- ۴. تب فروش روزانه -->
+    <!-- ۵. تب فروش روزانه -->
     <section id="tab-sales" class="hidden space-y-4">
       <div class="flex justify-between items-center">
         <div>
@@ -272,7 +347,7 @@
       <div id="sales-list" class="space-y-3"></div>
     </section>
 
-    <!-- ۵. تب خرید روزانه -->
+    <!-- ۶. تب خرید روزانه -->
     <section id="tab-purchases" class="hidden space-y-4">
       <div class="flex justify-between items-center">
         <div>
@@ -288,10 +363,10 @@
       <div id="purchases-list" class="space-y-3"></div>
     </section>
 
-    <!-- ۶. تب تنظیمات و پشتیبان‌گیری -->
+    <!-- ۷. تب تنظیمات و پشتیبان‌گیری -->
     <section id="tab-settings" class="hidden space-y-4">
       <div class="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
-        <h2 class="font-bold text-sm">مشخصات فروشگاه (جهت درج در سربرگ فاکتور)</h2>
+        <h2 class="font-bold text-sm">مشخصات فروشگاه (جهت سربرگ فاکتور)</h2>
         <div class="space-y-2 text-xs">
           <div>
             <label class="block font-bold text-slate-500 mb-1">نام فروشگاه / کسب‌وکار:</label>
@@ -313,7 +388,7 @@
       <div class="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
         <h2 class="font-bold text-sm">پشتیبان‌گیری و انتقال اطلاعات به گوشی دیگر</h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          برای انتقال به گوشی دیگر، فایل بکاپ را دانلود کرده و در گوشی دوم با دکمه بازیابی بارگذاری کنید تا تمام موجودی انبار فوراً منتقل شود.
+          برای انتقال به گوشی دیگر، فایل بکاپ را دانلود کرده و در گوشی دوم با دکمه بازیابی بارگذاری کنید تا تمام موجودی انبار و دفتر حساب‌ها فوراً منتقل شود.
         </p>
         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
           <button onclick="exportJSON()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1">
@@ -330,55 +405,63 @@
 
         <button onclick="exportCSV()" class="w-full p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5">
           <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <span>دانلود گزارش اکسل انبار و فروش (CSV)</span>
+          <span>دانلود گزارش اکسل جامع (CSV)</span>
         </button>
       </div>
     </section>
 
   </main>
 
-  <!-- ================== منوی ناوبری پایین صفحه (بزرگ و تاچ آسان) ================== -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 px-2 py-2 shadow-lg">
+  <!-- ================== منوی ناوبری پایین صفحه (۶ دکمه شیک و ارگونومیک) ================== -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 px-1 py-2 shadow-lg">
     <div class="max-w-xl mx-auto flex items-center justify-around">
 
       <!-- ۱. داشبورد -->
-      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/40 transition-all">
-        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/40 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
         </svg>
-        <span class="text-xs font-extrabold leading-none">داشبورد</span>
+        <span class="text-[10px] font-extrabold leading-none">داشبورد</span>
       </button>
 
       <!-- ۲. انبار کالاها -->
-      <button onclick="switchTab('inventory')" id="nav-inventory" class="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
-        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button onclick="switchTab('inventory')" id="nav-inventory" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
         </svg>
-        <span class="text-xs font-extrabold leading-none">انبار کالا</span>
+        <span class="text-[10px] font-extrabold leading-none">انبار</span>
       </button>
 
-      <!-- ۳. صدور فاکتور -->
-      <button onclick="switchTab('invoice')" id="nav-invoice" class="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
-        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- ۳. دفتر حساب‌ها (بدهی و طلب) -->
+      <button onclick="switchTab('debts')" id="nav-debts" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span class="text-[10px] font-extrabold leading-none">دفتر حساب</span>
+      </button>
+
+      <!-- ۴. صدور فاکتور -->
+      <button onclick="switchTab('invoice')" id="nav-invoice" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
         </svg>
-        <span class="text-xs font-extrabold leading-none">صدور فاکتور</span>
+        <span class="text-[10px] font-extrabold leading-none">فاکتور</span>
       </button>
 
-      <!-- ۴. فروش -->
-      <button onclick="switchTab('sales')" id="nav-sales" class="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
-        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- ۵. فروش -->
+      <button onclick="switchTab('sales')" id="nav-sales" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
         </svg>
-        <span class="text-xs font-extrabold leading-none">فروش</span>
+        <span class="text-[10px] font-extrabold leading-none">فروش</span>
       </button>
 
-      <!-- ۵. خرید -->
-      <button onclick="switchTab('purchases')" id="nav-purchases" class="flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
-        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- ۶. خرید -->
+      <button onclick="switchTab('purchases')" id="nav-purchases" class="flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all">
+        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
-        <span class="text-xs font-extrabold leading-none">خرید</span>
+        <span class="text-[10px] font-extrabold leading-none">خرید</span>
       </button>
 
     </div>
@@ -458,7 +541,7 @@
       </div>
 
       <div class="text-[11px] text-slate-500 dark:text-slate-400">
-        فایل PDF آماده است. همچنین می‌توانید تصویر باکیفیت فاکتور را برای ارسال در تلگرام یا چاپ ذخیره نمایید.
+        فایل PDF با کیفیت بالا آماده است. می‌توانید فایل را دانلود کرده یا عکس آن را ذخیره نمایید:
       </div>
 
       <!-- محفظه اسکرول پیش‌نمایش تصویر -->
@@ -466,7 +549,7 @@
         <img id="invoice-preview-img" src="" alt="فاکتور" class="w-full rounded-xl shadow-xs inline-block">
       </div>
 
-      <!-- دکمه‌های دانلود قطعی -->
+      <!-- دکمه‌های دانلود -->
       <div class="grid grid-cols-2 gap-2 pt-1">
         <button id="btn-download-pdf-file" class="py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-md shadow-indigo-600/20 active:scale-95">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
@@ -478,6 +561,71 @@
         </button>
       </div>
       <button onclick="closeModal('modal-invoice-preview')" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold">بستن</button>
+    </div>
+  </div>
+
+  <!-- ================== مودال افزودن / ویرایش حساب و بدهی ================== -->
+  <div id="modal-debt" class="fixed inset-0 z-50 bg-black/60 p-4 hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl border border-slate-200 dark:border-slate-800">
+      <h3 id="modal-debt-title" class="font-bold text-sm text-violet-600 dark:text-violet-400">ثبت حساب / بدهی جدید</h3>
+      <form onsubmit="handleDebtSubmit(event)" class="space-y-2.5 text-xs">
+        <input type="hidden" id="debt-id">
+        
+        <!-- نوع حساب: طلب یا بدهی -->
+        <div>
+          <label class="block text-slate-500 font-bold mb-1">نوع وضعیت مالی:</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/40 cursor-pointer">
+              <input type="radio" name="debt-type" value="receivable" checked class="text-emerald-600">
+              <span class="font-bold text-emerald-700 dark:text-emerald-300">طلب ما (از شخص)</span>
+            </label>
+            <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-rose-300 dark:border-rose-800 bg-rose-50/60 dark:bg-rose-950/40 cursor-pointer">
+              <input type="radio" name="debt-type" value="payable" class="text-rose-600">
+              <span class="font-bold text-rose-700 dark:text-rose-300">بدهی ما (به شخص)</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-500 font-bold mb-1">نام طرف حساب / شخص:</label>
+          <input type="text" id="debt-person" required placeholder="مثال: آقای علوی، شرکت پخش..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">مبلغ (تومان):</label>
+            <input type="number" id="debt-amount" required placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold">
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">شماره تماس (اختیاری):</label>
+            <input type="text" id="debt-phone" placeholder="۰۹۱۲..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">تاریخ سررسید / وعده:</label>
+            <input type="text" id="debt-due-date" placeholder="مثال: آخر ماه، ۱۴۰۵/۰۲" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">وضعیت پرداخت:</label>
+            <select id="debt-status" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium">
+              <option value="pending">تسویه نشده (فعال)</option>
+              <option value="settled">تسویه شده (پرداخت کامل)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-500 font-bold mb-1">توضیحات و بابت:</label>
+          <input type="text" id="debt-notes" placeholder="مثال: بابت باقیمانده فاکتور ایرپاد" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-debt')" class="w-1/3 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold">انصراف</button>
+          <button type="submit" class="w-2/3 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold shadow-md shadow-violet-600/20">ذخیره حساب</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -593,8 +741,8 @@
       }
     }
 
-    // کلید ارتقا یافته جهت بارگذاری خودکار ۱۵ قلم اولیه
-    const KEY = 'SHOP_ACCOUNTING_DATA_V6';
+    // کلید نسخه جدید دیتابیس با ۲۰ قلم کالا و سیستم حساب‌ها
+    const KEY = 'SHOP_ACCOUNTING_DATA_V7';
     let db = {
       settings: {
         name: 'محصولات فرهنگی آبان',
@@ -608,15 +756,23 @@
         { id: '4', name: 'فلش ۶۴ گیگ', buy: 0, sell: 0, stock: 5 },
         { id: '5', name: 'فلش ۶۴ گیگ usb3', buy: 0, sell: 0, stock: 5 },
         { id: '6', name: 'فلش ۳۲ گیگ usb3', buy: 0, sell: 0, stock: 5 },
-        { id: '7', name: 'اداپتور انکر 20 وات', buy: 0, sell: 0, stock: 5 },
-        { id: '8', name: 'اداپتور انکر 30 وات', buy: 0, sell: 0, stock: 5 },
-        { id: '9', name: 'اداپتور انکر ۴۵ وات', buy: 0, sell: 0, stock: 5 },
-        { id: '10', name: 'پاوربانک انکر ۲۰ هزار میلی امپر', buy: 0, sell: 0, stock: 5 },
-        { id: '11', name: 'ایرپاد انکر R50i', buy: 0, sell: 0, stock: 5 },
-        { id: '12', name: 'ایرپاد انکر R50 Nc', buy: 0, sell: 0, stock: 5 },
-        { id: '13', name: 'هدست گردنی انکر Life u2i', buy: 0, sell: 0, stock: 5 },
-        { id: '14', name: 'کابل شارژ انکر', buy: 0, sell: 0, stock: 5 },
-        { id: '15', name: 'اسپیکر انکر', buy: 0, sell: 0, stock: 5 }
+        { id: '7', name: 'اداپتور Anker 20 وات', buy: 0, sell: 0, stock: 5 },
+        { id: '8', name: 'اداپتور Anker 30 وات', buy: 0, sell: 0, stock: 5 },
+        { id: '9', name: 'اداپتور Anker 45 وات', buy: 0, sell: 0, stock: 5 },
+        { id: '10', name: 'پاوربانک Anker 20 هزار میلی آمپر', buy: 0, sell: 0, stock: 5 },
+        { id: '11', name: 'ایرپاد Anker R50i', buy: 0, sell: 0, stock: 5 },
+        { id: '12', name: 'ایرپاد Anker R50 Nc', buy: 0, sell: 0, stock: 5 },
+        { id: '13', name: 'هدست گردنی Anker Life u2i', buy: 0, sell: 0, stock: 5 },
+        { id: '14', name: 'کابل شارژ Anker', buy: 0, sell: 0, stock: 5 },
+        { id: '15', name: 'اسپیکر Anker', buy: 0, sell: 0, stock: 5 },
+        { id: '16', name: 'اداپتور Mcdodo 20w', buy: 0, sell: 0, stock: 5 },
+        { id: '17', name: 'اداپتور Mcdodo 33w', buy: 0, sell: 0, stock: 5 },
+        { id: '18', name: 'کابل Mcdodo T_c', buy: 0, sell: 0, stock: 5 },
+        { id: '19', name: 'کابل Mcdodo آیفون', buy: 0, sell: 0, stock: 5 },
+        { id: '20', name: 'کابل Mcdodo T_l', buy: 0, sell: 0, stock: 5 }
+      ],
+      debts: [
+        { id: 'd_1', person: 'همکار / بازار', phone: '', type: 'payable', amount: 0, dueDate: '', notes: 'نمونه حساب بدهی', status: 'pending', date: '۱۴۰۵/۰۱/۰۱' }
       ],
       sales: [],
       purchases: [],
@@ -624,11 +780,15 @@
     };
 
     let currentInvoiceItems = [];
+    let currentDebtFilter = 'all';
 
     function loadDB() {
       try {
         const saved = localStorage.getItem(KEY);
-        if (saved) db = JSON.parse(saved);
+        if (saved) {
+          db = JSON.parse(saved);
+          if (!db.debts) db.debts = [];
+        }
       } catch (e) {}
       saveDB();
     }
@@ -651,7 +811,7 @@
 
     function switchTab(t) {
       haptic();
-      const tabs = ['dashboard', 'inventory', 'invoice', 'sales', 'purchases', 'settings'];
+      const tabs = ['dashboard', 'inventory', 'debts', 'invoice', 'sales', 'purchases', 'settings'];
       tabs.forEach(tab => {
         const el = document.getElementById('tab-' + tab);
         if (el) el.classList.toggle('hidden', tab !== t);
@@ -659,9 +819,9 @@
         const nav = document.getElementById('nav-' + tab);
         if (nav) {
           if (tab === t) {
-            nav.className = 'flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/40 transition-all scale-105';
+            nav.className = 'flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/70 dark:bg-indigo-950/40 transition-all scale-105';
           } else {
-            nav.className = 'flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all';
+            nav.className = 'flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all';
           }
         }
       });
@@ -673,6 +833,7 @@
     }
 
     function renderAll() {
+      // سربرگ
       document.getElementById('store-title').innerText = db.settings?.name || 'حسابداری و انبارداری';
       document.getElementById('header-date').innerText = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(new Date());
 
@@ -680,6 +841,7 @@
       document.getElementById('setting-phone').value = db.settings?.phone || '';
       document.getElementById('setting-address').value = db.settings?.address || '';
 
+      // آمار پایه
       const totalSales = db.sales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
       const totalPurchases = db.purchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
       const totalProfit = db.sales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
@@ -690,6 +852,23 @@
       document.getElementById('dash-profit').innerText = formatNum(totalProfit);
       document.getElementById('dash-stock-value').innerText = formatNum(stockVal);
 
+      // آمار بدهی و طلب
+      const pendingDebts = db.debts.filter(d => d.status !== 'settled');
+      const totalReceivable = pendingDebts.filter(d => d.type === 'receivable').reduce((acc, d) => acc + Number(d.amount || 0), 0);
+      const totalPayable = pendingDebts.filter(d => d.type === 'payable').reduce((acc, d) => acc + Number(d.amount || 0), 0);
+      const netBalance = totalReceivable - totalPayable;
+
+      document.getElementById('dash-receivables').innerText = formatNum(totalReceivable);
+      document.getElementById('dash-payables').innerText = formatNum(totalPayable);
+      document.getElementById('dash-net-balance').innerText = (netBalance >= 0 ? '+' : '') + formatNum(netBalance);
+      document.getElementById('dash-net-balance').className = 'text-xs font-black ' + (netBalance >= 0 ? 'text-emerald-400' : 'text-rose-400');
+
+      document.getElementById('total-receivables-badge').innerText = formatNum(totalReceivable);
+      document.getElementById('total-payables-badge').innerText = formatNum(totalPayable);
+      document.getElementById('net-balance-badge').innerText = (netBalance >= 0 ? '+' : '') + formatNum(netBalance);
+      document.getElementById('net-balance-badge').className = 'text-sm font-black ' + (netBalance >= 0 ? 'text-emerald-600' : 'text-rose-600');
+
+      // هشدار موجودی کم
       const low = db.products.filter(p => Number(p.stock) <= 3);
       document.getElementById('low-stock-count').innerText = `${formatNum(low.length)} کالا`;
       document.getElementById('low-stock-list').innerHTML = low.length === 0
@@ -704,10 +883,171 @@
         `).join('');
 
       renderInventory();
+      renderDebts();
       renderSales();
       renderPurchases();
       updateProductSelects();
       renderInvoiceTable();
+    }
+
+    // ================== مدیریت بدهی و طلبکاری (دفتر حساب) ==================
+    function setDebtFilter(type) {
+      currentDebtFilter = type;
+      ['all', 'receivable', 'payable'].forEach(f => {
+        const btn = document.getElementById('debt-filter-' + f);
+        if (f === type) {
+          btn.className = 'px-2.5 py-1.5 rounded-xl font-bold bg-indigo-600 text-white transition-all';
+        } else {
+          btn.className = 'px-2.5 py-1.5 rounded-xl font-bold text-slate-600 dark:text-slate-300';
+        }
+      });
+      renderDebts();
+      haptic();
+    }
+
+    function renderDebts() {
+      const q = (document.getElementById('debt-search')?.value || '').trim().toLowerCase();
+      let list = db.debts || [];
+
+      if (currentDebtFilter !== 'all') {
+        list = list.filter(d => d.type === currentDebtFilter);
+      }
+
+      if (q) {
+        list = list.filter(d => (d.person && d.person.toLowerCase().includes(q)) || (d.notes && d.notes.toLowerCase().includes(q)));
+      }
+
+      const listEl = document.getElementById('debts-list');
+      if (list.length === 0) {
+        listEl.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">هیچ ردیف حسابی در این بخش ثبت نشده است.</div>';
+        return;
+      }
+
+      listEl.innerHTML = list.map(d => {
+        const isReceivable = d.type === 'receivable';
+        const isSettled = d.status === 'settled';
+
+        return `
+          <div class="bg-white dark:bg-slate-900 p-3.5 rounded-3xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs shadow-xs ${isSettled ? 'opacity-55' : ''}">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="px-2 py-0.5 rounded-lg text-[10px] font-black ${isReceivable ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'}">
+                  ${isReceivable ? 'طلب ما' : 'بدهی ما'}
+                </span>
+                <b class="text-sm text-slate-900 dark:text-white">${d.person}</b>
+                ${isSettled ? '<span class="text-[9px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">تسویه شد ✓</span>' : ''}
+              </div>
+              <span class="text-slate-400 text-[11px] block">
+                ${d.notes ? d.notes : 'بدون یادداشت'}
+                ${d.dueDate ? ` • وعده: ${d.dueDate}` : ''}
+                ${d.phone ? ` • تلفن: ${d.phone}` : ''}
+              </span>
+            </div>
+
+            <div class="text-left flex items-center gap-2">
+              <div>
+                <b class="block text-xs font-black ${isReceivable ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                  ${formatNum(d.amount)} ت
+                </b>
+                <button onclick="toggleDebtStatus('${d.id}')" class="text-[10px] font-bold ${isSettled ? 'text-amber-500' : 'text-emerald-600'}">
+                  ${isSettled ? 'بازگشت به فعال' : 'تغییر به تسویه'}
+                </button>
+              </div>
+              <div class="flex flex-col gap-1">
+                <button onclick="openEditDebtModal('${d.id}')" class="p-1 text-indigo-600 font-bold">ویرایش</button>
+                <button onclick="deleteDebt('${d.id}')" class="p-1 text-rose-600 font-bold">حذف</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAddDebtModal() {
+      document.getElementById('debt-id').value = '';
+      document.getElementById('debt-person').value = '';
+      document.getElementById('debt-amount').value = '';
+      document.getElementById('debt-phone').value = '';
+      document.getElementById('debt-due-date').value = '';
+      document.getElementById('debt-notes').value = '';
+      document.getElementById('debt-status').value = 'pending';
+      document.querySelector('input[name="debt-type"][value="receivable"]').checked = true;
+      document.getElementById('modal-debt-title').innerText = 'ثبت سطر حساب / بدهی جدید';
+      document.getElementById('modal-debt').classList.remove('hidden');
+    }
+
+    function openEditDebtModal(id) {
+      const d = db.debts.find(x => x.id === id);
+      if (!d) return;
+      document.getElementById('debt-id').value = d.id;
+      document.getElementById('debt-person').value = d.person;
+      document.getElementById('debt-amount').value = d.amount;
+      document.getElementById('debt-phone').value = d.phone || '';
+      document.getElementById('debt-due-date').value = d.dueDate || '';
+      document.getElementById('debt-notes').value = d.notes || '';
+      document.getElementById('debt-status').value = d.status || 'pending';
+      
+      const typeRadio = document.querySelector(`input[name="debt-type"][value="${d.type}"]`);
+      if (typeRadio) typeRadio.checked = true;
+
+      document.getElementById('modal-debt-title').innerText = 'ویرایش حساب: ' + d.person;
+      document.getElementById('modal-debt').classList.remove('hidden');
+    }
+
+    function handleDebtSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('debt-id').value;
+      const person = document.getElementById('debt-person').value.trim();
+      const amount = Number(document.getElementById('debt-amount').value) || 0;
+      const phone = document.getElementById('debt-phone').value.trim();
+      const dueDate = document.getElementById('debt-due-date').value.trim();
+      const notes = document.getElementById('debt-notes').value.trim();
+      const status = document.getElementById('debt-status').value;
+      const type = document.querySelector('input[name="debt-type"]:checked').value;
+
+      if (!person || amount <= 0) {
+        return alert('نام طرف حساب و مبلغ معتبر الزامی است.');
+      }
+
+      if (id) {
+        const index = db.debts.findIndex(x => x.id === id);
+        if (index !== -1) {
+          db.debts[index] = { ...db.debts[index], person, amount, phone, dueDate, notes, status, type };
+        }
+      } else {
+        db.debts.unshift({
+          id: 'd_' + Date.now(),
+          person,
+          amount,
+          phone,
+          dueDate,
+          notes,
+          status,
+          type,
+          date: new Intl.DateTimeFormat('fa-IR').format(new Date())
+        });
+      }
+
+      closeModal('modal-debt');
+      saveDB();
+      haptic();
+    }
+
+    function toggleDebtStatus(id) {
+      const d = db.debts.find(x => x.id === id);
+      if (d) {
+        d.status = d.status === 'settled' ? 'pending' : 'settled';
+        saveDB();
+        haptic();
+      }
+    }
+
+    function deleteDebt(id) {
+      if (confirm('آیا این حساب از دفتر حساب‌ها حذف شود؟')) {
+        db.debts = db.debts.filter(x => x.id !== id);
+        saveDB();
+        haptic();
+      }
     }
 
     // ================== انبار کالاها ==================
@@ -865,7 +1205,7 @@
       return { subtotal, discount, finalTotal };
     }
 
-    // ================== صدور واقعی PDF و پیش‌نمایش تصویر با html2canvas و jsPDF ==================
+    // صدور PDF استاندارد و پیش‌نمایش تصویر با html2canvas و jsPDF
     async function generateAndShowInvoicePDF() {
       if (currentInvoiceItems.length === 0) {
         return alert('ابتدا حداقل یک کالا به فاکتور اضافه کنید.');
@@ -885,7 +1225,6 @@
         const invNum = db.invoiceCount || 101;
         const dateStr = new Intl.DateTimeFormat('fa-IR').format(new Date());
 
-        // پر کردن برگه رندرینگ فاکتور
         document.getElementById('print-shop-name').innerText = db.settings?.name || 'فروشگاه';
         document.getElementById('print-shop-phone').innerText = `تلفن: ${db.settings?.phone || '-'}`;
         document.getElementById('print-shop-address').innerText = `آدرس: ${db.settings?.address || '-'}`;
@@ -908,7 +1247,6 @@
         document.getElementById('print-discount').innerText = `${formatNum(discount)} تومان`;
         document.getElementById('print-total').innerText = `${formatNum(finalTotal)} تومان`;
 
-        // تبدیل المنت به تصویر باکیفیت و ساخت PDF
         const targetElement = document.getElementById('invoice-render-sheet');
         const canvas = await html2canvas(targetElement, {
           scale: 2,
@@ -917,11 +1255,8 @@
         });
 
         const imgData = canvas.toDataURL('image/png');
-        
-        // تنظیم تصویر در مودال پیش‌نمایش
         document.getElementById('invoice-preview-img').src = imgData;
 
-        // تنظیم دانلود تصویر
         document.getElementById('btn-download-img-file').onclick = function() {
           const a = document.createElement('a');
           a.href = imgData;
@@ -932,7 +1267,6 @@
           haptic();
         };
 
-        // تنظیم و تولید فایل PDF استاندارد با jsPDF
         document.getElementById('btn-download-pdf-file').onclick = function() {
           try {
             const { jsPDF } = window.jspdf;
@@ -943,11 +1277,10 @@
             pdf.save(`Factor_${invNum}.pdf`);
             haptic();
           } catch(e) {
-            alert('لطفاً از گزینه ذخیره عکس فاکتور استفاده نمایید.');
+            alert('لطفاً از دکمه ذخیره عکس استفاده کنید.');
           }
         };
 
-        // تلاش برای دانلود خودکار PDF
         try {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF('p', 'mm', 'a4');
@@ -957,12 +1290,11 @@
           pdf.save(`Factor_${invNum}.pdf`);
         } catch(err) {}
 
-        // باز کردن پنجره مودال پیش‌نمایش
         document.getElementById('modal-invoice-preview').classList.remove('hidden');
 
       } catch(err) {
         console.error(err);
-        alert('خطا در تولید فایل فاکتور. لطفاً مجدداً تلاش کنید.');
+        alert('خطا در تولید فایل فاکتور.');
       } finally {
         btn.disabled = false;
         btnText.innerText = originalText;
@@ -1224,6 +1556,7 @@
           if (data.products && Array.isArray(data.products)) {
             if (confirm('آیا مایلید اطلاعات این فایل جایگزین داده‌های فعلی شوند؟')) {
               db = data;
+              if (!db.debts) db.debts = [];
               saveDB();
               alert('تمام اطلاعات با موفقیت بازگردانی شدند.');
               haptic();
@@ -1239,14 +1572,31 @@
     }
 
     function exportCSV() {
-      let csv = "\uFEFFنوع,نام کالا,تعداد,قیمت واحد,مبلغ کل,طرف حساب\n";
-      db.products.forEach(p => { csv += `انبار,"${p.name}",${p.stock},${p.sell},${p.stock * p.sell},-\n`; });
-      db.sales.forEach(s => { csv += `فروش,"${s.productName}",${s.qty},${s.price},${s.total},"${s.customer || '-'}"\n`; });
-      db.purchases.forEach(b => { csv += `خرید,"${b.productName}",${b.qty},${b.price},${b.total},"${b.supplier || '-'}"\n`; });
+      let csv = "\uFEFFدسته,نام یا عنوان,تعداد / وضعیت,مبلغ واحد / نوع,مبلغ کل,طرف حساب,توضیحات\n";
+      
+      // انبار
+      db.products.forEach(p => { 
+        csv += `انبار,"${p.name}",${p.stock},${p.sell},${p.stock * p.sell},-,-\n`; 
+      });
+      // فروش
+      db.sales.forEach(s => { 
+        csv += `فروش,"${s.productName}",${s.qty},${s.price},${s.total},"${s.customer || '-'}","سود: ${s.profit}"\n`; 
+      });
+      // خرید
+      db.purchases.forEach(b => { 
+        csv += `خرید,"${b.productName}",${b.qty},${b.price},${b.total},"${b.supplier || '-'}",-\n`; 
+      });
+      // حساب‌ها و بدهی/طلب
+      (db.debts || []).forEach(d => {
+        const typeLabel = d.type === 'receivable' ? 'طلب ما' : 'بدهی ما';
+        const statusLabel = d.status === 'settled' ? 'تسویه شده' : 'تسویه نشده';
+        csv += `دفتر حساب,"${d.person}","${statusLabel}","${typeLabel}",${d.amount},"${d.phone || '-'}","${d.notes || '-'}"\n`;
+      });
+
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'report.csv';
+      a.download = 'hesabdari_report.csv';
       a.click();
       haptic();
     }
