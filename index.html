@@ -3,1512 +3,579 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مینی‌اپ جامع حسابداری و انبارداری</title>
-  <!-- Telegram WebApp SDK -->
+  <title>حسابداری و انبارداری</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            vazir: ['Vazirmatn', 'Tahoma', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-            }
-          }
+          fontFamily: { vazir: ['Vazirmatn', 'Tahoma', 'sans-serif'] }
         }
       }
     }
   </script>
-  <!-- Google Font: Vazirmatn -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Vazirmatn', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    /* اسکرول‌بار شیک */
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.03);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(100,116,139,0.25);
-      border-radius: 9999px;
-    }
-    .pb-safe {
-      padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 72px);
-    }
+    body { font-family: 'Vazirmatn', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 75px); }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-safe">
 
-  <!-- نوار بالای صفحه (Header) -->
-  <header class="sticky top-0 z-30 backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-xs">
+  <!-- نوار بالای صفحه -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-xs">
     <div class="flex items-center gap-2">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-        </svg>
+      <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+        📊
       </div>
       <div>
-        <h1 class="font-bold text-sm sm:text-base leading-tight" id="store-title">حسابداری و انبارداری</h1>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400" id="current-jalali-date">امروز: در حال دریافت...</p>
+        <h1 class="font-bold text-sm" id="store-title">حسابداری و انبارداری</h1>
+        <p class="text-[10px] text-slate-500 dark:text-slate-400" id="header-date">در حال بارگذاری...</p>
       </div>
     </div>
     <div class="flex items-center gap-1.5">
-      <button onclick="openBackupModal()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors" title="پشتیبان‌گیری">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-        </svg>
-      </button>
-      <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors" title="حالت شب/روز">
-        <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
-        <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-        </svg>
+      <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs">
+        🌓 تم
       </button>
     </div>
   </header>
 
-  <!-- محتوای اصلی تب‌ها -->
   <main class="max-w-xl mx-auto p-4 space-y-4">
 
-    <!-- ================== ۱. تب داشبورد ================== -->
+    <!-- تب ۱: داشبورد -->
     <section id="tab-dashboard" class="space-y-4">
-      <!-- فیلتر بازه زمانی داشبورد -->
-      <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <span class="text-xs font-medium text-slate-500 pr-2">بازه آماری:</span>
-        <div class="flex gap-1">
-          <button onclick="setDashboardPeriod('today')" id="period-today" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all">امروز</button>
-          <button onclick="setDashboardPeriod('week')" id="period-week" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">۷ روز</button>
-          <button onclick="setDashboardPeriod('month')" id="period-month" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">۳۰ روز</button>
-          <button onclick="setDashboardPeriod('all')" id="period-all" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">کل</button>
-        </div>
-      </div>
-
-      <!-- کارت‌های آماری -->
       <div class="grid grid-cols-2 gap-3">
-        <!-- کل فروش -->
-        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800/60 p-3.5 rounded-2xl">
-          <div class="flex items-center justify-between text-emerald-600 dark:text-emerald-400 mb-1">
-            <span class="text-xs font-medium">فروش کل</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-          </div>
-          <div class="text-lg font-extrabold text-slate-900 dark:text-white" id="dash-total-sales">۰</div>
-          <span class="text-[10px] text-slate-500 dark:text-slate-400">تومان</span>
+        <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 rounded-2xl">
+          <span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold block mb-1">فروش کل</span>
+          <div class="text-lg font-extrabold text-slate-900 dark:text-white" id="dash-sales">۰</div>
+          <span class="text-[10px] text-slate-400">تومان</span>
         </div>
-
-        <!-- کل خرید -->
-        <div class="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/30 border border-sky-200 dark:border-sky-800/60 p-3.5 rounded-2xl">
-          <div class="flex items-center justify-between text-sky-600 dark:text-sky-400 mb-1">
-            <span class="text-xs font-medium">خرید کل</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-          </div>
-          <div class="text-lg font-extrabold text-slate-900 dark:text-white" id="dash-total-purchases">۰</div>
-          <span class="text-[10px] text-slate-500 dark:text-slate-400">تومان</span>
+        <div class="bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 p-3 rounded-2xl">
+          <span class="text-xs text-sky-600 dark:text-sky-400 font-bold block mb-1">خرید کل</span>
+          <div class="text-lg font-extrabold text-slate-900 dark:text-white" id="dash-purchases">۰</div>
+          <span class="text-[10px] text-slate-400">تومان</span>
         </div>
-
-        <!-- سود ناخالص -->
-        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/30 border border-indigo-200 dark:border-indigo-800/60 p-3.5 rounded-2xl">
-          <div class="flex items-center justify-between text-indigo-600 dark:text-indigo-400 mb-1">
-            <span class="text-xs font-medium">سود ناخالص</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-          </div>
-          <div class="text-lg font-extrabold text-indigo-600 dark:text-indigo-400" id="dash-total-profit">۰</div>
-          <span class="text-[10px] text-slate-500 dark:text-slate-400">تومان</span>
+        <div class="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 p-3 rounded-2xl">
+          <span class="text-xs text-indigo-600 dark:text-indigo-400 font-bold block mb-1">سود ناخالص</span>
+          <div class="text-lg font-extrabold text-indigo-600 dark:text-indigo-400" id="dash-profit">۰</div>
+          <span class="text-[10px] text-slate-400">تومان</span>
         </div>
-
-        <!-- ارزش ریالی انبار -->
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800/60 p-3.5 rounded-2xl">
-          <div class="flex items-center justify-between text-amber-600 dark:text-amber-400 mb-1">
-            <span class="text-xs font-medium">ارزش موجودی انبار</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-          </div>
+        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-3 rounded-2xl">
+          <span class="text-xs text-amber-600 dark:text-amber-400 font-bold block mb-1">ارزش موجودی انبار</span>
           <div class="text-lg font-extrabold text-slate-900 dark:text-white" id="dash-stock-value">۰</div>
-          <span class="text-[10px] text-slate-500 dark:text-slate-400">تومان</span>
+          <span class="text-[10px] text-slate-400">تومان</span>
         </div>
       </div>
 
-      <!-- دکمه‌های اقدام سریع -->
       <div class="grid grid-cols-2 gap-3 pt-1">
-        <button onclick="switchTab('sales'); openAddSaleModal();" class="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>ثبت فروش جدید</span>
+        <button onclick="switchTab('sales'); openAddSaleModal();" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold shadow-md text-center">
+          + ثبت فروش جدید
         </button>
-        <button onclick="switchTab('purchases'); openAddPurchaseModal();" class="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm shadow-lg shadow-sky-600/20 active:scale-[0.98] transition-all">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>ثبت خرید / فاکتور</span>
+        <button onclick="switchTab('purchases'); openAddPurchaseModal();" class="p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-2xl text-xs font-bold shadow-md text-center">
+          + ثبت خرید / فاکتور
         </button>
       </div>
 
-      <!-- هشدارهای موجودی کالاها (کالاهای روبه‌اتمام) -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="font-bold text-sm flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            <span>کالاهای روبه‌اتمام یا ناموجود</span>
-          </h2>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-bold" id="low-stock-count">۰</span>
-        </div>
-        <div id="low-stock-list" class="space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-800">
-          <!-- با جاوااسکریپت پر می‌شود -->
-        </div>
-      </div>
-
-      <!-- آخرین تراکنش‌های ثبت‌شده -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-xs">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="font-bold text-sm">تراکنش‌های اخیر</h2>
-          <span class="text-[11px] text-slate-400">فروش و خریدهای اخیر</span>
-        </div>
-        <div id="recent-transactions-list" class="space-y-2.5">
-          <!-- با جاوااسکریپت پر می‌شود -->
-        </div>
+      <!-- کالاهای روبه‌اتمام -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+        <h2 class="font-bold text-xs text-amber-600 mb-2">⚠️ کالاهای رو به اتمام (کمتر از ۳ عدد)</h2>
+        <div id="low-stock-list" class="space-y-2 text-xs"></div>
       </div>
     </section>
 
-    <!-- ================== ۲. تب انبار و موجودی کالاها ================== -->
+    <!-- تب ۲: انبار کالاها -->
     <section id="tab-inventory" class="hidden space-y-4">
-      <!-- نوار جستجو و افزودن کالا -->
       <div class="flex gap-2">
-        <div class="relative flex-1">
-          <input type="text" id="inventory-search" oninput="renderInventory()" placeholder="جستجوی نام یا بارکد کالا..." class="w-full pl-3 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <svg class="w-4 h-4 absolute right-3 top-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
-        <button onclick="openProductModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>کالای جدید</span>
+        <input type="text" id="inv-search" oninput="renderInventory()" placeholder="جستجوی نام کالا..." class="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+        <button onclick="openAddProductModal()" class="px-3 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">
+          + کالای جدید
         </button>
       </div>
-
-      <!-- آمار مختصر انبار -->
-      <div class="flex items-center justify-between text-xs px-2 text-slate-500">
-        <span>تعداد کل اقلام: <b id="inv-item-count" class="text-slate-800 dark:text-slate-200">۰</b> کالا</span>
-        <span>مجموع واحد موجودی: <b id="inv-total-units" class="text-slate-800 dark:text-slate-200">۰</b> عدد</span>
-      </div>
-
-      <!-- لیست کارت‌های کالاها با قابلیت ویرایش، حذف و مدیریت موجودی -->
-      <div id="inventory-list" class="space-y-3">
-        <!-- با جاوااسکریپت پر می‌شود -->
-      </div>
+      <div id="inventory-list" class="space-y-3"></div>
     </section>
 
-    <!-- ================== ۳. تب فروش روزانه ================== -->
+    <!-- تب ۳: فروش -->
     <section id="tab-sales" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="font-bold text-base">لیست فروش‌های روزانه</h2>
-          <p class="text-xs text-slate-400">ویرایش، حذف و ثبت فاکتور جدید</p>
-        </div>
-        <button onclick="openAddSaleModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>ثبت فروش</span>
+      <div class="flex justify-between items-center">
+        <h2 class="font-bold text-sm">فاکتورهای فروش روزانه</h2>
+        <button onclick="openAddSaleModal()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold">
+          + ثبت فروش
         </button>
       </div>
-
-      <!-- فیلتر و جستجوی فروش -->
-      <div class="relative">
-        <input type="text" id="sales-search" oninput="renderSales()" placeholder="جستجو بر اساس نام کالا، مشتری یا تاریخ..." class="w-full pl-3 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        <svg class="w-4 h-4 absolute right-3 top-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-      </div>
-
-      <!-- لیست تراکنش‌های فروش -->
-      <div id="sales-list" class="space-y-3">
-        <!-- با جاوااسکریپت پر می‌شود -->
-      </div>
+      <div id="sales-list" class="space-y-3"></div>
     </section>
 
-    <!-- ================== ۴. تب خرید روزانه ================== -->
+    <!-- تب ۴: خرید -->
     <section id="tab-purchases" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="font-bold text-base">لیست خریدهای روزانه</h2>
-          <p class="text-xs text-slate-400">ثبت فاکتور تامین کالا، ویرایش و حذف</p>
-        </div>
-        <button onclick="openAddPurchaseModal()" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-sky-600/20 active:scale-95 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          <span>ثبت خرید</span>
+      <div class="flex justify-between items-center">
+        <h2 class="font-bold text-sm">فاکتورهای خرید و تامین</h2>
+        <button onclick="openAddPurchaseModal()" class="px-3 py-1.5 bg-sky-600 text-white rounded-xl text-xs font-bold">
+          + ثبت خرید
         </button>
       </div>
-
-      <!-- فیلتر و جستجوی خرید -->
-      <div class="relative">
-        <input type="text" id="purchases-search" oninput="renderPurchases()" placeholder="جستجو بر اساس نام کالا، تامین‌کننده یا تاریخ..." class="w-full pl-3 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
-        <svg class="w-4 h-4 absolute right-3 top-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-      </div>
-
-      <!-- لیست تراکنش‌های خرید -->
-      <div id="purchases-list" class="space-y-3">
-        <!-- با جاوااسکریپت پر می‌شود -->
-      </div>
+      <div id="purchases-list" class="space-y-3"></div>
     </section>
 
-    <!-- ================== ۵. تب گزارشات و تنظیمات ================== -->
+    <!-- تب ۵: تنظیمات و بکاپ -->
     <section id="tab-reports" class="hidden space-y-4">
-      <!-- کارت مشخصات فروشگاه -->
-      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
-        <h2 class="font-bold text-sm">تنظیمات فروشگاه</h2>
-        <div class="space-y-2">
-          <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">نام فروشگاه / کسب‌وکار</label>
-            <input type="text" id="setting-shop-name" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <button onclick="saveStoreSettings()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all">ذخیره تغییرات</button>
-        </div>
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+        <h3 class="font-bold text-xs">نام فروشگاه</h3>
+        <input type="text" id="store-name-input" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+        <button onclick="saveStoreName()" class="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">ذخیره نام</button>
       </div>
 
-      <!-- خروجی اکسل و پشتیبان‌گیری کامل -->
-      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
-        <h2 class="font-bold text-sm">پشتیبان‌گیری و خروجی اکسل</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400">تمام اطلاعات در حافظه محلی ذخیره می‌شوند. برای جلوگیری از دست رفتن داده‌ها، نسخه پشتیبان تهیه کنید.</p>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="exportJSONBackup()" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all">
-            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            <span>دانلود بکاپ (JSON)</span>
-          </button>
-          <label class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer transition-all">
-            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-            <span>بازیابی بکاپ (JSON)</span>
-            <input type="file" id="import-json-file" accept=".json" onchange="importJSONBackup(event)" class="hidden">
-          </label>
-        </div>
-        <button onclick="exportCSVReport()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <span>دانلود فایل اکسل فروش و موجودی (CSV)</span>
-        </button>
-      </div>
-
-      <!-- هشدار پاک‌سازی -->
-      <div class="bg-rose-50 dark:bg-rose-950/30 p-4 rounded-2xl border border-rose-200 dark:border-rose-900/50 space-y-2">
-        <h3 class="font-bold text-xs text-rose-700 dark:text-rose-400">عملیات حساس</h3>
-        <p class="text-[11px] text-rose-600 dark:text-rose-300">در صورت تمایل می‌توانید تمام کالاها و تاریخچه فاکتورها را ریست کنید.</p>
-        <button onclick="resetAllData()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold">حذف کلیه اطلاعات</button>
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+        <h3 class="font-bold text-xs">پشتیبان‌گیری</h3>
+        <button onclick="exportDataJSON()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-xs font-bold rounded-xl">دانلود فایل پشتیبان (JSON)</button>
+        <button onclick="exportDataCSV()" class="w-full py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 text-xs font-bold rounded-xl">دانلود خروجی اکسل (CSV)</button>
       </div>
     </section>
 
   </main>
 
-  <!-- ================== منوی ناوبری پایین صفحه (Bottom Navigation) ================== -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3 py-2">
-    <div class="max-w-xl mx-auto flex items-center justify-around">
-      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-        <span class="text-[10px] font-bold">داشبورد</span>
-      </button>
-
-      <button onclick="switchTab('inventory')" id="nav-inventory" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-        <span class="text-[10px] font-bold">انبار و کالاها</span>
-      </button>
-
-      <button onclick="switchTab('sales')" id="nav-sales" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-        <span class="text-[10px] font-bold">فروش روزانه</span>
-      </button>
-
-      <button onclick="switchTab('purchases')" id="nav-purchases" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-        <span class="text-[10px] font-bold">خرید روزانه</span>
-      </button>
-
-      <button onclick="switchTab('reports')" id="nav-reports" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        <span class="text-[10px] font-bold">تنظیمات</span>
-      </button>
+  <!-- منوی پایین -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-3 py-2">
+    <div class="max-w-xl mx-auto flex items-center justify-around text-[10px] font-bold">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="text-indigo-600">داشبورد</button>
+      <button onclick="switchTab('inventory')" id="nav-inventory" class="text-slate-400">انبار کالا</button>
+      <button onclick="switchTab('sales')" id="nav-sales" class="text-slate-400">فروش</button>
+      <button onclick="switchTab('purchases')" id="nav-purchases" class="text-slate-400">خرید</button>
+      <button onclick="switchTab('reports')" id="nav-reports" class="text-slate-400">تنظیمات</button>
     </div>
   </nav>
 
-  <!-- ================== مودال افزودن / ویرایش کالا ================== -->
-  <div id="modal-product" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 id="modal-product-title" class="font-bold text-base text-slate-800 dark:text-white">تعریف کالای جدید</h3>
-        <button onclick="closeProductModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <form id="form-product" onsubmit="handleProductSubmit(event)" class="space-y-3">
-        <input type="hidden" id="prod-id" value="">
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">نام کالا <span class="text-rose-500">*</span></label>
-          <input type="text" id="prod-name" required placeholder="مثال: هندزفری بلوتوثی پرو" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-indigo-500">
+  <!-- مودال افزودن/ویرایش کالا -->
+  <div id="modal-product" class="fixed inset-0 z-50 bg-black/60 p-4 hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 w-full max-w-sm space-y-3">
+      <h3 id="modal-product-title" class="font-bold text-sm">کالای جدید</h3>
+      <form onsubmit="handleProductSubmit(event)" class="space-y-2 text-xs">
+        <input type="hidden" id="p-id">
+        <input type="text" id="p-name" required placeholder="نام کالا" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="p-buy" required placeholder="قیمت خرید" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+          <input type="number" id="p-sell" required placeholder="قیمت فروش" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">دسته‌بندی</label>
-            <input type="text" id="prod-category" placeholder="مثال: لوازم جانبی" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">کد / بارکد</label>
-            <input type="text" id="prod-barcode" placeholder="اختیاری" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">قیمت خرید (تومان) <span class="text-rose-500">*</span></label>
-            <input type="number" id="prod-buy-price" required min="0" step="100" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">قیمت فروش (تومان) <span class="text-rose-500">*</span></label>
-            <input type="number" id="prod-sell-price" required min="0" step="100" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">موجودی اولیه / فعلی <span class="text-rose-500">*</span></label>
-            <input type="number" id="prod-stock" required min="0" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">حداقل هشدار موجودی</label>
-            <input type="number" id="prod-min-stock" value="3" min="0" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <div class="pt-3 flex gap-2">
-          <button type="button" onclick="closeProductModal()" class="w-1/3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold">انصراف</button>
-          <button type="submit" class="w-2/3 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/30">ذخیره کالا</button>
+        <input type="number" id="p-stock" required placeholder="موجودی" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-product')" class="w-1/3 py-2 bg-slate-200 dark:bg-slate-700 rounded-xl">انصراف</button>
+          <button type="submit" class="w-2/3 py-2 bg-indigo-600 text-white rounded-xl font-bold">ذخیره</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ================== مودال ثبت / ویرایش فروش ================== -->
-  <div id="modal-sale" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 id="modal-sale-title" class="font-bold text-base text-emerald-600 dark:text-emerald-400">ثبت فروش روزانه</h3>
-        <button onclick="closeSaleModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <form id="form-sale" onsubmit="handleSaleSubmit(event)" class="space-y-3">
-        <input type="hidden" id="sale-id" value="">
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">انتخاب کالا <span class="text-rose-500">*</span></label>
-          <select id="sale-product-id" required onchange="onSaleProductSelect()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500">
-            <option value="">-- انتخاب کنید --</option>
-          </select>
-          <div id="sale-stock-hint" class="text-[11px] text-slate-400 mt-1">موجودی فعلی در انبار: -</div>
+  <!-- مودال ثبت/ویرایش فروش -->
+  <div id="modal-sale" class="fixed inset-0 z-50 bg-black/60 p-4 hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 w-full max-w-sm space-y-3">
+      <h3 id="modal-sale-title" class="font-bold text-sm text-emerald-600">ثبت فروش روزانه</h3>
+      <form onsubmit="handleSaleSubmit(event)" class="space-y-2 text-xs">
+        <input type="hidden" id="s-id">
+        <select id="s-product" required onchange="onSaleProductChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border"></select>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="s-qty" required min="1" value="1" placeholder="تعداد" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+          <input type="number" id="s-price" required placeholder="قیمت واحد" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">تعداد فروش <span class="text-rose-500">*</span></label>
-            <input type="number" id="sale-qty" required min="1" value="1" oninput="calculateSaleTotal()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">قیمت واحد فروش (تومان) <span class="text-rose-500">*</span></label>
-            <input type="number" id="sale-unit-price" required min="0" oninput="calculateSaleTotal()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <!-- تخفیف و مبلغ کل -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">تخفیف (تومان)</label>
-            <input type="number" id="sale-discount" value="0" min="0" oninput="calculateSaleTotal()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">مبلغ کل قابل پرداخت</label>
-            <div id="sale-total-display" class="w-full px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-sm">۰ تومان</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">نام خریدار / مشتری</label>
-            <input type="text" id="sale-customer" placeholder="مشتری عادی" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">روش پرداخت</label>
-            <select id="sale-payment" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-              <option value="کارتخوان">کارتخوان</option>
-              <option value="نقدی">نقدی</option>
-              <option value="کارت به کارت">کارت به کارت</option>
-              <option value="نسیه / بدهی">نسیه / بدهی</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">تاریخ فاکتور</label>
-          <input type="date" id="sale-date" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-        </div>
-
-        <div class="pt-3 flex gap-2">
-          <button type="button" onclick="closeSaleModal()" class="w-1/3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold">انصراف</button>
-          <button type="submit" class="w-2/3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/30">ثبت فاکتور فروش</button>
+        <input type="text" id="s-customer" placeholder="نام مشتری" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-sale')" class="w-1/3 py-2 bg-slate-200 dark:bg-slate-700 rounded-xl">انصراف</button>
+          <button type="submit" class="w-2/3 py-2 bg-emerald-600 text-white rounded-xl font-bold">ثبت فروش</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ================== مودال ثبت / ویرایش خرید ================== -->
-  <div id="modal-purchase" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 id="modal-purchase-title" class="font-bold text-base text-sky-600 dark:text-sky-400">ثبت خرید و فاکتور تامین</h3>
-        <button onclick="closePurchaseModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <form id="form-purchase" onsubmit="handlePurchaseSubmit(event)" class="space-y-3">
-        <input type="hidden" id="purchase-id" value="">
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">انتخاب کالا <span class="text-rose-500">*</span></label>
-          <select id="purchase-product-id" required onchange="onPurchaseProductSelect()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-sky-500">
-            <option value="">-- انتخاب کنید --</option>
-          </select>
+  <!-- مودال ثبت/ویرایش خرید -->
+  <div id="modal-purchase" class="fixed inset-0 z-50 bg-black/60 p-4 hidden flex items-center justify-center">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 w-full max-w-sm space-y-3">
+      <h3 id="modal-purchase-title" class="font-bold text-sm text-sky-600">ثبت فاکتور خرید</h3>
+      <form onsubmit="handlePurchaseSubmit(event)" class="space-y-2 text-xs">
+        <input type="hidden" id="b-id">
+        <select id="b-product" required onchange="onPurchaseProductChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border"></select>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" id="b-qty" required min="1" value="1" placeholder="تعداد" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+          <input type="number" id="b-price" required placeholder="قیمت واحد" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">تعداد خریداری شده <span class="text-rose-500">*</span></label>
-            <input type="number" id="purchase-qty" required min="1" value="1" oninput="calculatePurchaseTotal()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">قیمت واحد خرید (تومان) <span class="text-rose-500">*</span></label>
-            <input type="number" id="purchase-unit-price" required min="0" oninput="calculatePurchaseTotal()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">مبلغ کل فاکتور خرید</label>
-          <div id="purchase-total-display" class="w-full px-3 py-2 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-bold text-sm">۰ تومان</div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold mb-1">تامین‌کننده / شرکت</label>
-            <input type="text" id="purchase-supplier" placeholder="نام فروشنده یا بازار" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">تاریخ خرید</label>
-            <input type="date" id="purchase-date" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1">توضیحات / شماره فاکتور</label>
-          <input type="text" id="purchase-notes" placeholder="اختیاری..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-        </div>
-
-        <div class="pt-3 flex gap-2">
-          <button type="button" onclick="closePurchaseModal()" class="w-1/3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold">انصراف</button>
-          <button type="submit" class="w-2/3 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-md shadow-sky-600/30">ذخیره فاکتور خرید</button>
+        <input type="text" id="b-supplier" placeholder="نام تامین‌کننده" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-purchase')" class="w-1/3 py-2 bg-slate-200 dark:bg-slate-700 rounded-xl">انصراف</button>
+          <button type="submit" class="w-2/3 py-2 bg-sky-600 text-white rounded-xl font-bold">ثبت خرید</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Toast اعلان عملیات -->
-  <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl bg-slate-900 text-white text-xs font-semibold shadow-xl border border-slate-700 transition-all duration-300 opacity-0 pointer-events-none">
-    پیام اعلان
-  </div>
-
-  <!-- جاوا اسکریپت هسته اپلیکیشن -->
   <script>
-    // اتصال اولیه با تلگرام وب‌اپ
+    // تنظیمات پایه و اتصال به تلگرام
     const tg = window.Telegram?.WebApp;
     if (tg) {
-      tg.ready();
-      tg.expand();
-      // تنظیم رنگ نوار بالای تلگرام
-      if (tg.setHeaderColor) tg.setHeaderColor('bg_color');
+      try { tg.ready(); tg.expand(); } catch (e) {}
     }
 
-    function triggerHaptic(type = 'impact') {
-      if (tg?.HapticFeedback) {
-        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-        else if (type === 'warning') tg.HapticFeedback.notificationOccurred('warning');
-        else tg.HapticFeedback.impactOccurred('medium');
-      }
-    }
-
-    // ساختار اولیه داده‌ها
-    const STORAGE_KEY = 'SHOP_ACCOUNTING_APP_V2';
+    const KEY = 'APP_ACCOUNTING_DATA_V1';
     let db = {
-      settings: {
-        storeName: 'محصولات فرهنگی و فروشگاهی',
-        currency: 'تومان'
-      },
+      name: 'فروشگاه حسابداری',
       products: [
-        { id: 'p_1', name: 'هندزفری سامسونگ تایپ سی', category: 'لوازم جانبی', barcode: '1001', buyPrice: 75000, sellPrice: 140000, stock: 12, minStock: 3 },
-        { id: 'p_2', name: 'کابل فست شارژ آیفون لایتنینگ', category: 'کابل و شارژر', barcode: '1002', buyPrice: 50000, sellPrice: 95000, stock: 4, minStock: 5 },
-        { id: 'p_3', name: 'گلس سوپر دی تمام صفحه', category: 'محافظ صفحه', barcode: '1003', buyPrice: 20000, sellPrice: 65000, stock: 25, minStock: 5 },
-        { id: 'p_4', name: 'فلش مموری ۶۴ گیگابایت لکسار', category: 'حافظه', barcode: '1004', buyPrice: 290000, sellPrice: 380000, stock: 2, minStock: 4 }
+        { id: '1', name: 'هندزفری سامسونگ تایپ سی', buy: 75000, sell: 140000, stock: 10 },
+        { id: '2', name: 'کابل فست آیفون', buy: 50000, sell: 95000, stock: 2 }
       ],
-      sales: [
-        {
-          id: 's_1',
-          date: new Date().toISOString().split('T')[0],
-          productId: 'p_1',
-          productName: 'هندزفری سامسونگ تایپ سی',
-          qty: 1,
-          unitBuyPrice: 75000,
-          unitSellPrice: 140000,
-          discount: 0,
-          total: 140000,
-          profit: 65000,
-          customer: 'مشتری فروشگاه',
-          paymentMethod: 'کارتخوان'
-        }
-      ],
-      purchases: [
-        {
-          id: 'b_1',
-          date: new Date().toISOString().split('T')[0],
-          productId: 'p_1',
-          productName: 'هندزفری سامسونگ تایپ سی',
-          qty: 10,
-          unitPrice: 75000,
-          total: 750000,
-          supplier: 'پخش تهران',
-          notes: 'فاکتور ۱۲۴'
-        }
-      ]
+      sales: [],
+      purchases: []
     };
 
-    // بارگذاری داده از LocalStorage
-    function loadData() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          db = JSON.parse(saved);
-        } catch (e) {
-          console.error('خطا در خواندن داده‌ها', e);
-        }
-      }
-      saveData();
-    }
-
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-      updateUI();
-    }
-
-    // توابع کمکی فرمت‌بندی
-    function formatNumber(num) {
-      if (isNaN(num)) return '۰';
-      return new Intl.NumberFormat('fa-IR').format(Math.round(num));
-    }
-
-    function formatJalaliDate(isoDateStr) {
-      if (!isoDateStr) return '';
+    function loadDB() {
       try {
-        const parts = isoDateStr.split('-');
-        const d = new Date(parts[0], parts[1] - 1, parts[2]);
-        return new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'short', day: 'numeric' }).format(d);
-      } catch (e) {
-        return isoDateStr;
-      }
+        const saved = localStorage.getItem(KEY);
+        if (saved) db = JSON.parse(saved);
+      } catch (e) {}
+      saveDB();
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.classList.remove('opacity-0');
-      toast.classList.add('opacity-100');
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0');
-      }, 2400);
+    function saveDB() {
+      try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {}
+      renderAll();
     }
 
-    // تاریخ امروز به شمسی برای هدر
-    function setHeaderDate() {
-      const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const jalaliStr = new Intl.DateTimeFormat('fa-IR', options).format(now);
-      document.getElementById('current-jalali-date').innerText = 'امروز: ' + jalaliStr;
-      document.getElementById('store-title').innerText = db.settings?.storeName || 'حسابداری و انبارداری';
+    function formatNum(n) {
+      return new Intl.NumberFormat('fa-IR').format(Math.round(n || 0));
     }
 
-    // حالت شب / روز
     function toggleDarkMode() {
       document.documentElement.classList.toggle('dark');
-      triggerHaptic('impact');
     }
 
-    // متغیر بازه زمانی داشبورد
-    let currentPeriod = 'today';
-    function setDashboardPeriod(period) {
-      currentPeriod = period;
-      ['today', 'week', 'month', 'all'].forEach(p => {
-        const btn = document.getElementById('period-' + p);
-        if (p === period) {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition-all';
-        } else {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all';
-        }
+    function switchTab(t) {
+      ['dashboard', 'inventory', 'sales', 'purchases', 'reports'].forEach(tab => {
+        document.getElementById('tab-' + tab).classList.toggle('hidden', tab !== t);
+        const nav = document.getElementById('nav-' + tab);
+        if (nav) nav.className = (tab === t) ? 'text-indigo-600 font-bold' : 'text-slate-400 font-bold';
       });
-      triggerHaptic('impact');
-      renderDashboard();
+      window.scrollTo(0,0);
     }
 
-    // فیلتر بازه زمانی برای تاریخ‌ها
-    function isDateInPeriod(dateStr, period) {
-      if (!dateStr) return false;
-      if (period === 'all') return true;
-      const d = new Date(dateStr);
-      const now = new Date();
-      // تنظیم ساعت روی صفر برای مقایسه دقیق
-      d.setHours(0,0,0,0);
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      if (period === 'today') {
-        return d.getTime() === today.getTime();
-      } else if (period === 'week') {
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 7);
-        return d >= sevenDaysAgo && d <= today;
-      } else if (period === 'month') {
-        const thirtyDaysAgo = new Date(today);
-        thirtyDaysAgo.setDate(today.getDate() - 30);
-        return d >= thirtyDaysAgo && d <= today;
-      }
-      return true;
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
     }
 
-    // ================== رندر بخش‌های مختلف ==================
-    function updateUI() {
-      renderDashboard();
+    function renderAll() {
+      document.getElementById('store-title').innerText = db.name || 'فروشگاه حسابداری';
+      document.getElementById('store-name-input').value = db.name || '';
+      document.getElementById('header-date').innerText = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(new Date());
+
+      // آمار
+      const totalSales = db.sales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+      const totalPurchases = db.purchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
+      const totalProfit = db.sales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
+      const stockVal = db.products.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.buy) || 0)), 0);
+
+      document.getElementById('dash-sales').innerText = formatNum(totalSales);
+      document.getElementById('dash-purchases').innerText = formatNum(totalPurchases);
+      document.getElementById('dash-profit').innerText = formatNum(totalProfit);
+      document.getElementById('dash-stock-value').innerText = formatNum(stockVal);
+
+      // کالاهای رو به اتمام
+      const low = db.products.filter(p => Number(p.stock) <= 2);
+      document.getElementById('low-stock-list').innerHTML = low.length === 0 
+        ? '<p class="text-slate-400 text-center py-2">همه کالاها موجودی کافی دارند.</p>'
+        : low.map(p => `<div class="flex justify-between border-b border-slate-100 dark:border-slate-800 py-1"><span>${p.name}</span><b class="text-rose-500">${formatNum(p.stock)} عدد</b></div>`).join('');
+
       renderInventory();
       renderSales();
       renderPurchases();
-      populateProductSelects();
+      updateSelectOptions();
     }
 
-    function renderDashboard() {
-      // فیلتر فروش‌ها و خریدها بر اساس بازه انتخابی
-      const filteredSales = db.sales.filter(s => isDateInPeriod(s.date, currentPeriod));
-      const filteredPurchases = db.purchases.filter(p => isDateInPeriod(p.date, currentPeriod));
-
-      const totalSales = filteredSales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
-      const totalPurchases = filteredPurchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
-      const totalProfit = filteredSales.reduce((acc, s) => acc + (Number(s.profit) || 0), 0);
-
-      // ارزش کل انبار
-      const stockValue = db.products.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.buyPrice) || 0)), 0);
-
-      document.getElementById('dash-total-sales').innerText = formatNumber(totalSales);
-      document.getElementById('dash-total-purchases').innerText = formatNumber(totalPurchases);
-      document.getElementById('dash-total-profit').innerText = formatNumber(totalProfit);
-      document.getElementById('dash-stock-value').innerText = formatNumber(stockValue);
-
-      // بررسی کالاهای کم‌موجود
-      const lowStockProducts = db.products.filter(p => Number(p.stock) <= Number(p.minStock));
-      document.getElementById('low-stock-count').innerText = formatNumber(lowStockProducts.length);
-      const lowStockList = document.getElementById('low-stock-list');
-      if (lowStockProducts.length === 0) {
-        lowStockList.innerHTML = '<p class="text-slate-400 py-1 text-center">همه کالاها موجودی مناسب دارند ✅</p>';
-      } else {
-        lowStockList.innerHTML = lowStockProducts.slice(0, 5).map(p => `
-          <div class="flex items-center justify-between py-2">
-            <div>
-              <span class="font-semibold text-slate-800 dark:text-slate-200">${p.name}</span>
-              <span class="text-[10px] text-slate-400 block">${p.category || 'بدون دسته‌بندی'}</span>
-            </div>
-            <div class="text-left">
-              <span class="px-2 py-0.5 rounded-md ${Number(p.stock) === 0 ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'} font-bold">
-                ${Number(p.stock) === 0 ? 'ناموجود' : `تنها ${formatNumber(p.stock)} عدد`}
-              </span>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // آخرین تراکنش‌ها (فروش + خرید ترکیبی)
-      const allTx = [
-        ...db.sales.map(s => ({ ...s, txType: 'sale' })),
-        ...db.purchases.map(p => ({ ...p, txType: 'purchase' }))
-      ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 6);
-
-      const recentList = document.getElementById('recent-transactions-list');
-      if (allTx.length === 0) {
-        recentList.innerHTML = '<p class="text-slate-400 text-center text-xs py-4">هنوز تراکنشی ثبت نشده است.</p>';
-      } else {
-        recentList.innerHTML = allTx.map(t => {
-          const isSale = t.txType === 'sale';
-          return `
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-              <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center ${isSale ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400'}">
-                  ${isSale ? `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                  ` : `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                  `}
-                </div>
-                <div>
-                  <p class="font-bold text-xs text-slate-800 dark:text-slate-100">${t.productName || 'کالا'}</p>
-                  <p class="text-[10px] text-slate-400">${formatJalaliDate(t.date)} • ${isSale ? (t.customer || 'مشتری') : (t.supplier || 'تامین‌کننده')} (${formatNumber(t.qty)} عدد)</p>
-                </div>
-              </div>
-              <div class="text-left">
-                <span class="text-xs font-bold ${isSale ? 'text-emerald-600 dark:text-emerald-400' : 'text-sky-600 dark:text-sky-400'}">
-                  ${isSale ? '+' : '-'}${formatNumber(t.total)}
-                </span>
-                <span class="text-[9px] block text-slate-400">تومان</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
-    // ================== مدیریت انبار و کالاها (CRUD) ==================
+    // انبار
     function renderInventory() {
-      const q = (document.getElementById('inventory-search')?.value || '').toLowerCase().trim();
-      const filtered = db.products.filter(p => 
-        (p.name && p.name.toLowerCase().includes(q)) || 
-        (p.barcode && p.barcode.toLowerCase().includes(q)) ||
-        (p.category && p.category.toLowerCase().includes(q))
-      );
-
-      document.getElementById('inv-item-count').innerText = formatNumber(db.products.length);
-      const totalUnits = db.products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
-      document.getElementById('inv-total-units').innerText = formatNumber(totalUnits);
-
-      const listEl = document.getElementById('inventory-list');
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs">کالایی با این مشخصات یافت نشد.</div>';
-        return;
-      }
-
-      listEl.innerHTML = filtered.map(p => {
-        const isLow = Number(p.stock) <= Number(p.minStock);
-        const isOut = Number(p.stock) <= 0;
-        const profitMargin = Number(p.sellPrice) - Number(p.buyPrice);
-
-        return `
-          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-all hover:border-indigo-400 dark:hover:border-indigo-600">
-            <div class="flex items-start justify-between gap-2">
-              <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-sm text-slate-900 dark:text-white">${p.name}</h3>
-                  ${p.category ? `<span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${p.category}</span>` : ''}
-                </div>
-                ${p.barcode ? `<span class="text-[10px] text-slate-400 mt-0.5 block">بارکد: ${p.barcode}</span>` : ''}
-              </div>
-
-              <!-- نشانگر وضعیت موجودی -->
-              <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${
-                isOut 
-                  ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' 
-                  : isLow 
-                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' 
-                  : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-              }">
-                موجودی: ${formatNumber(p.stock)} عدد
-              </span>
-            </div>
-
-            <!-- اطلاعات قیمت و سود -->
-            <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-              <div>
-                <span class="text-[10px] text-slate-400 block">قیمت خرید:</span>
-                <span class="font-semibold text-slate-700 dark:text-slate-300">${formatNumber(p.buyPrice)}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 block">قیمت فروش:</span>
-                <span class="font-bold text-emerald-600 dark:text-emerald-400">${formatNumber(p.sellPrice)}</span>
-              </div>
-              <div>
-                <span class="text-[10px] text-slate-400 block">سود هر عدد:</span>
-                <span class="font-bold text-indigo-600 dark:text-indigo-400">${formatNumber(profitMargin)}</span>
-              </div>
-            </div>
-
-            <!-- دکمه‌های عملیات سریع (ویرایش، حذف، تنظیم موجودی) -->
-            <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
-              <!-- تنظیم سریع تعداد موجودی -->
-              <div class="flex items-center gap-1.5">
-                <button onclick="quickAdjustStock('${p.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-sm active:scale-90 transition-transform">-</button>
-                <span class="text-xs font-bold px-1.5">${formatNumber(p.stock)}</span>
-                <button onclick="quickAdjustStock('${p.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-sm active:scale-90 transition-transform">+</button>
-              </div>
-
-              <!-- ویرایش و حذف -->
-              <div class="flex items-center gap-1.5">
-                <button onclick="openEditProductModal('${p.id}')" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center gap-1">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                  <span>ویرایش</span>
-                </button>
-                <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-1">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  <span>حذف</span>
-                </button>
-              </div>
-            </div>
+      const q = (document.getElementById('inv-search')?.value || '').trim().toLowerCase();
+      const list = db.products.filter(p => p.name.toLowerCase().includes(q));
+      document.getElementById('inventory-list').innerHTML = list.map(p => `
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
+          <div>
+            <b class="text-sm block">${p.name}</b>
+            <span class="text-slate-400">خرید: ${formatNum(p.buy)} | فروش: ${formatNum(p.sell)}</span>
           </div>
-        `;
-      }).join('');
+          <div class="flex items-center gap-2">
+            <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+              <button onclick="changeStock('${p.id}', -1)" class="w-6 h-6 font-bold">-</button>
+              <b class="px-2">${formatNum(p.stock)}</b>
+              <button onclick="changeStock('${p.id}', 1)" class="w-6 h-6 font-bold">+</button>
+            </div>
+            <button onclick="openEditProductModal('${p.id}')" class="text-indigo-600 font-bold px-1">ویرایش</button>
+            <button onclick="deleteProduct('${p.id}')" class="text-rose-600 font-bold px-1">حذف</button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    // باز و بسته کردن مودال کالا
-    function openProductModal() {
-      document.getElementById('form-product').reset();
-      document.getElementById('prod-id').value = '';
+    function changeStock(id, delta) {
+      const p = db.products.find(x => x.id === id);
+      if (p) {
+        p.stock = Math.max(0, Number(p.stock) + delta);
+        saveDB();
+      }
+    }
+
+    function openAddProductModal() {
+      document.getElementById('p-id').value = '';
+      document.getElementById('p-name').value = '';
+      document.getElementById('p-buy').value = '';
+      document.getElementById('p-sell').value = '';
+      document.getElementById('p-stock').value = '';
       document.getElementById('modal-product-title').innerText = 'تعریف کالای جدید';
       document.getElementById('modal-product').classList.remove('hidden');
     }
 
     function openEditProductModal(id) {
-      const p = db.products.find(item => item.id === id);
+      const p = db.products.find(x => x.id === id);
       if (!p) return;
-      document.getElementById('prod-id').value = p.id;
-      document.getElementById('prod-name').value = p.name || '';
-      document.getElementById('prod-category').value = p.category || '';
-      document.getElementById('prod-barcode').value = p.barcode || '';
-      document.getElementById('prod-buy-price').value = p.buyPrice || 0;
-      document.getElementById('prod-sell-price').value = p.sellPrice || 0;
-      document.getElementById('prod-stock').value = p.stock || 0;
-      document.getElementById('prod-min-stock').value = p.minStock || 3;
-
-      document.getElementById('modal-product-title').innerText = 'ویرایش کالا: ' + p.name;
+      document.getElementById('p-id').value = p.id;
+      document.getElementById('p-name').value = p.name;
+      document.getElementById('p-buy').value = p.buy;
+      document.getElementById('p-sell').value = p.sell;
+      document.getElementById('p-stock').value = p.stock;
+      document.getElementById('modal-product-title').innerText = 'ویرایش کالا';
       document.getElementById('modal-product').classList.remove('hidden');
-    }
-
-    function closeProductModal() {
-      document.getElementById('modal-product').classList.add('hidden');
     }
 
     function handleProductSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('prod-id').value;
-      const name = document.getElementById('prod-name').value.trim();
-      const category = document.getElementById('prod-category').value.trim();
-      const barcode = document.getElementById('prod-barcode').value.trim();
-      const buyPrice = Number(document.getElementById('prod-buy-price').value) || 0;
-      const sellPrice = Number(document.getElementById('prod-sell-price').value) || 0;
-      const stock = Number(document.getElementById('prod-stock').value) || 0;
-      const minStock = Number(document.getElementById('prod-min-stock').value) || 0;
-
-      if (!name) return alert('نام کالا الزامی است.');
+      const id = document.getElementById('p-id').value;
+      const name = document.getElementById('p-name').value.trim();
+      const buy = Number(document.getElementById('p-buy').value);
+      const sell = Number(document.getElementById('p-sell').value);
+      const stock = Number(document.getElementById('p-stock').value);
 
       if (id) {
-        // ویرایش کالا
-        const index = db.products.findIndex(p => p.id === id);
-        if (index !== -1) {
-          db.products[index] = {
-            ...db.products[index],
-            name, category, barcode, buyPrice, sellPrice, stock, minStock
-          };
-          showToast('کالا با موفقیت ویرایش شد.');
-        }
+        const item = db.products.find(x => x.id === id);
+        if (item) { item.name = name; item.buy = buy; item.sell = sell; item.stock = stock; }
       } else {
-        // افزودن کالای جدید
-        const newProduct = {
-          id: 'p_' + Date.now(),
-          name, category, barcode, buyPrice, sellPrice, stock, minStock
-        };
-        db.products.push(newProduct);
-        showToast('کالای جدید به انبار اضافه شد.');
+        db.products.push({ id: String(Date.now()), name, buy, sell, stock });
       }
-
-      triggerHaptic('success');
-      closeProductModal();
-      saveData();
+      closeModal('modal-product');
+      saveDB();
     }
 
     function deleteProduct(id) {
-      const p = db.products.find(item => item.id === id);
-      if (!p) return;
-      if (confirm(`آیا از حذف کالای "${p.name}" اطمینان دارید؟`)) {
-        db.products = db.products.filter(item => item.id !== id);
-        triggerHaptic('warning');
-        showToast('کالا حذف شد.');
-        saveData();
+      if (confirm('آیا این کالا حذف شود؟')) {
+        db.products = db.products.filter(x => x.id !== id);
+        saveDB();
       }
     }
 
-    function quickAdjustStock(id, diff) {
-      const p = db.products.find(item => item.id === id);
-      if (!p) return;
-      const newStock = Number(p.stock) + diff;
-      if (newStock < 0) return alert('موجودی کالا نمی‌تواند منفی باشد.');
-      p.stock = newStock;
-      triggerHaptic('impact');
-      saveData();
-    }
-
-    // ================== مدیریت فروش روزانه (CRUD) ==================
+    // فروش
     function renderSales() {
-      const q = (document.getElementById('sales-search')?.value || '').toLowerCase().trim();
-      const filtered = db.sales.filter(s => 
-        (s.productName && s.productName.toLowerCase().includes(q)) ||
-        (s.customer && s.customer.toLowerCase().includes(q)) ||
-        (s.date && s.date.includes(q))
-      ).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-      const listEl = document.getElementById('sales-list');
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs">هیچ فاکتور فروشی ثبت نشده است.</div>';
-        return;
-      }
-
-      listEl.innerHTML = filtered.map(s => `
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-          <div class="flex items-start justify-between gap-2">
+      document.getElementById('sales-list').innerHTML = db.sales.map(s => `
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
+          <div>
+            <b class="text-sm text-emerald-600 block">${s.productName}</b>
+            <span class="text-slate-400">${formatNum(s.qty)} عدد | مشتری: ${s.customer || 'عادی'}</span>
+          </div>
+          <div class="text-left flex items-center gap-2">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${s.productName}</h3>
-              </div>
-              <p class="text-[11px] text-slate-400 mt-1">
-                خریدار: <span class="text-slate-600 dark:text-slate-300 font-medium">${s.customer || 'مشتری آزاد'}</span> • روش پرداخت: ${s.paymentMethod || 'کارتخوان'}
-              </p>
-              <p class="text-[10px] text-slate-400 mt-0.5">تاریخ: ${formatJalaliDate(s.date)}</p>
+              <b class="block text-emerald-600">${formatNum(s.total)} ت</b>
+              <span class="text-[10px] text-indigo-500">سود: ${formatNum(s.profit)}</span>
             </div>
-
-            <div class="text-left">
-              <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">${formatNumber(s.total)}</span>
-              <span class="text-[10px] block text-slate-400">تومان</span>
-            </div>
-          </div>
-
-          <!-- جزئیات فاکتور -->
-          <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
-            <div>تعداد: <b class="text-slate-800 dark:text-slate-200">${formatNumber(s.qty)} عدد</b></div>
-            <div>قیمت واحد: <b class="text-slate-800 dark:text-slate-200">${formatNumber(s.unitSellPrice)}</b></div>
-            <div>سود معامله: <b class="text-indigo-600 dark:text-indigo-400">${formatNumber(s.profit)}</b></div>
-          </div>
-
-          <!-- دکمه‌های ویرایش و حذف فروش -->
-          <div class="flex items-center justify-end gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
-            <button onclick="openEditSaleModal('${s.id}')" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-              <span>ویرایش</span>
-            </button>
-            <button onclick="deleteSale('${s.id}')" class="px-3 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              <span>حذف</span>
-            </button>
+            <button onclick="openEditSaleModal('${s.id}')" class="text-indigo-600 font-bold px-1">ویرایش</button>
+            <button onclick="deleteSale('${s.id}')" class="text-rose-600 font-bold px-1">حذف</button>
           </div>
         </div>
       `).join('');
     }
 
-    function populateProductSelects() {
-      const saleSelect = document.getElementById('sale-product-id');
-      const purchaseSelect = document.getElementById('purchase-product-id');
-      if (!saleSelect || !purchaseSelect) return;
-
-      const currentSaleVal = saleSelect.value;
-      const currentPurchVal = purchaseSelect.value;
-
-      const optionsHtml = '<option value="">-- انتخاب کالا --</option>' + db.products.map(p => 
-        `<option value="${p.id}" data-stock="${p.stock}" data-buy="${p.buyPrice}" data-sell="${p.sellPrice}">${p.name} (موجودی: ${p.stock})</option>`
-      ).join('');
-
-      saleSelect.innerHTML = optionsHtml;
-      purchaseSelect.innerHTML = optionsHtml;
-
-      saleSelect.value = currentSaleVal;
-      purchaseSelect.value = currentPurchVal;
-    }
-
-    function onSaleProductSelect() {
-      const sel = document.getElementById('sale-product-id');
-      const selectedId = sel.value;
-      const p = db.products.find(item => item.id === selectedId);
-      const stockHint = document.getElementById('sale-stock-hint');
-      if (p) {
-        document.getElementById('sale-unit-price').value = p.sellPrice || 0;
-        stockHint.innerText = `موجودی فعلی در انبار: ${formatNumber(p.stock)} عدد`;
-        stockHint.className = `text-[11px] mt-1 ${p.stock <= 0 ? 'text-rose-500 font-bold' : 'text-slate-400'}`;
-      } else {
-        stockHint.innerText = 'موجودی فعلی در انبار: -';
-      }
-      calculateSaleTotal();
-    }
-
-    function calculateSaleTotal() {
-      const qty = Number(document.getElementById('sale-qty').value) || 0;
-      const unitPrice = Number(document.getElementById('sale-unit-price').value) || 0;
-      const discount = Number(document.getElementById('sale-discount').value) || 0;
-      const total = Math.max(0, (qty * unitPrice) - discount);
-      document.getElementById('sale-total-display').innerText = formatNumber(total) + ' تومان';
-      return total;
-    }
-
     function openAddSaleModal() {
-      document.getElementById('form-sale').reset();
-      document.getElementById('sale-id').value = '';
-      document.getElementById('sale-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('modal-sale-title').innerText = 'ثبت فاکتور فروش جدید';
-      populateProductSelects();
-      calculateSaleTotal();
+      document.getElementById('s-id').value = '';
+      document.getElementById('s-qty').value = '1';
+      document.getElementById('s-customer').value = '';
+      updateSelectOptions();
+      onSaleProductChange();
+      document.getElementById('modal-sale-title').innerText = 'ثبت فروش روزانه';
       document.getElementById('modal-sale').classList.remove('hidden');
     }
 
-    function openEditSaleModal(saleId) {
-      const s = db.sales.find(item => item.id === saleId);
+    function openEditSaleModal(id) {
+      const s = db.sales.find(x => x.id === id);
       if (!s) return;
-      populateProductSelects();
-
-      document.getElementById('sale-id').value = s.id;
-      document.getElementById('sale-product-id').value = s.productId;
-      document.getElementById('sale-qty').value = s.qty;
-      document.getElementById('sale-unit-price').value = s.unitSellPrice;
-      document.getElementById('sale-discount').value = s.discount || 0;
-      document.getElementById('sale-customer').value = s.customer || '';
-      document.getElementById('sale-payment').value = s.paymentMethod || 'کارتخوان';
-      document.getElementById('sale-date').value = s.date || new Date().toISOString().split('T')[0];
-
+      updateSelectOptions();
+      document.getElementById('s-id').value = s.id;
+      document.getElementById('s-product').value = s.productId;
+      document.getElementById('s-qty').value = s.qty;
+      document.getElementById('s-price').value = s.price;
+      document.getElementById('s-customer').value = s.customer;
       document.getElementById('modal-sale-title').innerText = 'ویرایش فاکتور فروش';
-      onSaleProductSelect();
-      calculateSaleTotal();
       document.getElementById('modal-sale').classList.remove('hidden');
     }
 
-    function closeSaleModal() {
-      document.getElementById('modal-sale').classList.add('hidden');
+    function onSaleProductChange() {
+      const pId = document.getElementById('s-product').value;
+      const p = db.products.find(x => x.id === pId);
+      if (p) document.getElementById('s-price').value = p.sell;
     }
 
     function handleSaleSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('sale-id').value;
-      const productId = document.getElementById('sale-product-id').value;
-      const qty = Number(document.getElementById('sale-qty').value) || 1;
-      const unitSellPrice = Number(document.getElementById('sale-unit-price').value) || 0;
-      const discount = Number(document.getElementById('sale-discount').value) || 0;
-      const customer = document.getElementById('sale-customer').value.trim() || 'مشتری آزاد';
-      const paymentMethod = document.getElementById('sale-payment').value;
-      const date = document.getElementById('sale-date').value || new Date().toISOString().split('T')[0];
+      const id = document.getElementById('s-id').value;
+      const pId = document.getElementById('s-product').value;
+      const qty = Number(document.getElementById('s-qty').value);
+      const price = Number(document.getElementById('s-price').value);
+      const customer = document.getElementById('s-customer').value.trim();
 
-      const product = db.products.find(p => p.id === productId);
-      if (!product) return alert('کالای معتبری انتخاب نشده است.');
+      const prod = db.products.find(x => x.id === pId);
+      if (!prod) return;
 
-      const total = Math.max(0, (qty * unitSellPrice) - discount);
-      const unitBuyPrice = Number(product.buyPrice) || 0;
-      const profit = total - (qty * unitBuyPrice);
+      const total = qty * price;
+      const profit = total - (qty * Number(prod.buy));
 
       if (id) {
-        // ویرایش فروش قبلی -> تنظیم تراز موجودی انبار
-        const saleIndex = db.sales.findIndex(s => s.id === id);
-        if (saleIndex !== -1) {
-          const oldSale = db.sales[saleIndex];
-          // برگرداندن موجودی قبلی و کسر تعداد جدید
-          const stockDiff = qty - oldSale.qty;
-          if (product.stock < stockDiff) {
-            return alert(`موجودی کالا در انبار کافی نیست! حداکثر موجودی قابل فروش: ${product.stock + oldSale.qty}`);
-          }
-          product.stock -= stockDiff;
-
-          db.sales[saleIndex] = {
-            ...oldSale,
-            productId,
-            productName: product.name,
-            qty,
-            unitBuyPrice,
-            unitSellPrice,
-            discount,
-            total,
-            profit,
-            customer,
-            paymentMethod,
-            date
-          };
-          showToast('فاکتور فروش ویرایش و موجودی انبار اصلاح شد.');
+        const sIndex = db.sales.findIndex(x => x.id === id);
+        if (sIndex !== -1) {
+          const old = db.sales[sIndex];
+          prod.stock += (old.qty - qty);
+          db.sales[sIndex] = { id, productId: pId, productName: prod.name, qty, price, total, profit, customer };
         }
       } else {
-        // ثبت فروش جدید
-        if (product.stock < qty) {
-          if (!confirm(`موجودی فعلی (${product.stock} عدد) کمتر از تعداد فروش (${qty} عدد) است. آیا فاکتور ثبت و موجودی منفی شود؟`)) {
-            return;
-          }
-        }
-        product.stock -= qty;
-
-        const newSale = {
-          id: 's_' + Date.now(),
-          productId,
-          productName: product.name,
-          qty,
-          unitBuyPrice,
-          unitSellPrice,
-          discount,
-          total,
-          profit,
-          customer,
-          paymentMethod,
-          date
-        };
-        db.sales.unshift(newSale);
-        showToast('فاکتور فروش با موفقیت ثبت و از انبار کسر شد.');
+        prod.stock -= qty;
+        db.sales.unshift({ id: String(Date.now()), productId: pId, productName: prod.name, qty, price, total, profit, customer });
       }
-
-      triggerHaptic('success');
-      closeSaleModal();
-      saveData();
+      closeModal('modal-sale');
+      saveDB();
     }
 
-    function deleteSale(saleId) {
-      const s = db.sales.find(item => item.id === saleId);
-      if (!s) return;
-      if (confirm(`آیا از حذف این فاکتور فروش (${s.productName} - ${s.total.toLocaleString()} تومان) اطمینان دارید؟
-نکته: تعداد ${s.qty} عدد مجدداً به انبار اضافه خواهد شد.`)) {
-        // بازگرداندن تعداد کالا به انبار
-        const p = db.products.find(item => item.id === s.productId);
-        if (p) {
-          p.stock += Number(s.qty);
-        }
-        db.sales = db.sales.filter(item => item.id !== saleId);
-        triggerHaptic('warning');
-        showToast('فاکتور فروش حذف شد و موجودی به انبار بازگشت.');
-        saveData();
+    function deleteSale(id) {
+      const s = db.sales.find(x => x.id === id);
+      if (s && confirm('آیا فاکتور فروش حذف شود؟ (موجودی به انبار برمی‌گردد)')) {
+        const prod = db.products.find(x => x.id === s.productId);
+        if (prod) prod.stock += Number(s.qty);
+        db.sales = db.sales.filter(x => x.id !== id);
+        saveDB();
       }
     }
 
-    // ================== مدیریت خرید روزانه (CRUD) ==================
+    // خرید
     function renderPurchases() {
-      const q = (document.getElementById('purchases-search')?.value || '').toLowerCase().trim();
-      const filtered = db.purchases.filter(p => 
-        (p.productName && p.productName.toLowerCase().includes(q)) ||
-        (p.supplier && p.supplier.toLowerCase().includes(q)) ||
-        (p.date && p.date.includes(q))
-      ).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-      const listEl = document.getElementById('purchases-list');
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs">هیچ فاکتور خریدی ثبت نشده است.</div>';
-        return;
-      }
-
-      listEl.innerHTML = filtered.map(p => `
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-                <h3 class="font-bold text-sm text-slate-900 dark:text-white">${p.productName}</h3>
-              </div>
-              <p class="text-[11px] text-slate-400 mt-1">
-                تامین‌کننده: <span class="text-slate-600 dark:text-slate-300 font-medium">${p.supplier || 'تامین‌کننده بازار'}</span>
-                ${p.notes ? ` • یادداشت: ${p.notes}` : ''}
-              </p>
-              <p class="text-[10px] text-slate-400 mt-0.5">تاریخ خرید: ${formatJalaliDate(p.date)}</p>
-            </div>
-
-            <div class="text-left">
-              <span class="text-sm font-extrabold text-sky-600 dark:text-sky-400">${formatNumber(p.total)}</span>
-              <span class="text-[10px] block text-slate-400">تومان</span>
-            </div>
+      document.getElementById('purchases-list').innerHTML = db.purchases.map(b => `
+        <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
+          <div>
+            <b class="text-sm text-sky-600 block">${b.productName}</b>
+            <span class="text-slate-400">${formatNum(b.qty)} عدد | تامین‌کننده: ${b.supplier || '-'}</span>
           </div>
-
-          <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
-            <div>تعداد ورود به انبار: <b class="text-slate-800 dark:text-slate-200">${formatNumber(p.qty)} عدد</b></div>
-            <div>قیمت واحد خرید: <b class="text-slate-800 dark:text-slate-200">${formatNumber(p.unitPrice)} تومان</b></div>
-          </div>
-
-          <!-- دکمه‌های ویرایش و حذف خرید -->
-          <div class="flex items-center justify-end gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
-            <button onclick="openEditPurchaseModal('${p.id}')" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-              <span>ویرایش</span>
-            </button>
-            <button onclick="deletePurchase('${p.id}')" class="px-3 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              <span>حذف</span>
-            </button>
+          <div class="text-left flex items-center gap-2">
+            <b class="text-sky-600">${formatNum(b.total)} ت</b>
+            <button onclick="openEditPurchaseModal('${b.id}')" class="text-indigo-600 font-bold px-1">ویرایش</button>
+            <button onclick="deletePurchase('${b.id}')" class="text-rose-600 font-bold px-1">حذف</button>
           </div>
         </div>
       `).join('');
     }
 
-    function onPurchaseProductSelect() {
-      const sel = document.getElementById('purchase-product-id');
-      const selectedId = sel.value;
-      const p = db.products.find(item => item.id === selectedId);
-      if (p) {
-        document.getElementById('purchase-unit-price').value = p.buyPrice || 0;
-      }
-      calculatePurchaseTotal();
-    }
-
-    function calculatePurchaseTotal() {
-      const qty = Number(document.getElementById('purchase-qty').value) || 0;
-      const unitPrice = Number(document.getElementById('purchase-unit-price').value) || 0;
-      const total = qty * unitPrice;
-      document.getElementById('purchase-total-display').innerText = formatNumber(total) + ' تومان';
-      return total;
-    }
-
     function openAddPurchaseModal() {
-      document.getElementById('form-purchase').reset();
-      document.getElementById('purchase-id').value = '';
-      document.getElementById('purchase-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('modal-purchase-title').innerText = 'ثبت فاکتور خرید / ورودی انبار';
-      populateProductSelects();
-      calculatePurchaseTotal();
+      document.getElementById('b-id').value = '';
+      document.getElementById('b-qty').value = '1';
+      document.getElementById('b-supplier').value = '';
+      updateSelectOptions();
+      onPurchaseProductChange();
+      document.getElementById('modal-purchase-title').innerText = 'ثبت خرید جدید';
       document.getElementById('modal-purchase').classList.remove('hidden');
     }
 
-    function openEditPurchaseModal(purchaseId) {
-      const p = db.purchases.find(item => item.id === purchaseId);
-      if (!p) return;
-      populateProductSelects();
-
-      document.getElementById('purchase-id').value = p.id;
-      document.getElementById('purchase-product-id').value = p.productId;
-      document.getElementById('purchase-qty').value = p.qty;
-      document.getElementById('purchase-unit-price').value = p.unitPrice;
-      document.getElementById('purchase-supplier').value = p.supplier || '';
-      document.getElementById('purchase-date').value = p.date || new Date().toISOString().split('T')[0];
-      document.getElementById('purchase-notes').value = p.notes || '';
-
+    function openEditPurchaseModal(id) {
+      const b = db.purchases.find(x => x.id === id);
+      if (!b) return;
+      updateSelectOptions();
+      document.getElementById('b-id').value = b.id;
+      document.getElementById('b-product').value = b.productId;
+      document.getElementById('b-qty').value = b.qty;
+      document.getElementById('b-price').value = b.price;
+      document.getElementById('b-supplier').value = b.supplier;
       document.getElementById('modal-purchase-title').innerText = 'ویرایش فاکتور خرید';
-      calculatePurchaseTotal();
       document.getElementById('modal-purchase').classList.remove('hidden');
     }
 
-    function closePurchaseModal() {
-      document.getElementById('modal-purchase').classList.add('hidden');
+    function onPurchaseProductChange() {
+      const pId = document.getElementById('b-product').value;
+      const p = db.products.find(x => x.id === pId);
+      if (p) document.getElementById('b-price').value = p.buy;
     }
 
     function handlePurchaseSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('purchase-id').value;
-      const productId = document.getElementById('purchase-product-id').value;
-      const qty = Number(document.getElementById('purchase-qty').value) || 1;
-      const unitPrice = Number(document.getElementById('purchase-unit-price').value) || 0;
-      const supplier = document.getElementById('purchase-supplier').value.trim() || 'تامین‌کننده بازار';
-      const date = document.getElementById('purchase-date').value || new Date().toISOString().split('T')[0];
-      const notes = document.getElementById('purchase-notes').value.trim();
+      const id = document.getElementById('b-id').value;
+      const pId = document.getElementById('b-product').value;
+      const qty = Number(document.getElementById('b-qty').value);
+      const price = Number(document.getElementById('b-price').value);
+      const supplier = document.getElementById('b-supplier').value.trim();
 
-      const product = db.products.find(item => item.id === productId);
-      if (!product) return alert('لطفاً کالای معتبری انتخاب کنید.');
+      const prod = db.products.find(x => x.id === pId);
+      if (!prod) return;
 
-      const total = qty * unitPrice;
+      const total = qty * price;
 
       if (id) {
-        // ویرایش خرید قبلی -> اعمال تفاوت تعداد در انبار
-        const pIndex = db.purchases.findIndex(item => item.id === id);
-        if (pIndex !== -1) {
-          const oldPurchase = db.purchases[pIndex];
-          const stockDiff = qty - oldPurchase.qty;
-          if (product.stock + stockDiff < 0) {
-            return alert('کاهش این فاکتور باعث منفی شدن موجودی انبار می‌شود!');
-          }
-          product.stock += stockDiff;
-          // بروزرسانی قیمت خرید پیش‌فرض کالا با فاکتور جدید
-          product.buyPrice = unitPrice;
-
-          db.purchases[pIndex] = {
-            ...oldPurchase,
-            productId,
-            productName: product.name,
-            qty,
-            unitPrice,
-            total,
-            supplier,
-            date,
-            notes
-          };
-          showToast('فاکتور خرید ویرایش و موجودی انبار به‌روزرسانی شد.');
+        const bIndex = db.purchases.findIndex(x => x.id === id);
+        if (bIndex !== -1) {
+          const old = db.purchases[bIndex];
+          prod.stock += (qty - old.qty);
+          prod.buy = price;
+          db.purchases[bIndex] = { id, productId: pId, productName: prod.name, qty, price, total, supplier };
         }
       } else {
-        // ثبت خرید جدید -> افزایش موجودی کالا در انبار
-        product.stock += qty;
-        product.buyPrice = unitPrice; // آپدیت آخرین قیمت خرید
-
-        const newPurchase = {
-          id: 'b_' + Date.now(),
-          productId,
-          productName: product.name,
-          qty,
-          unitPrice,
-          total,
-          supplier,
-          date,
-          notes
-        };
-        db.purchases.unshift(newPurchase);
-        showToast('فاکتور خرید ثبت و به موجودی انبار اضافه شد.');
+        prod.stock += qty;
+        prod.buy = price;
+        db.purchases.unshift({ id: String(Date.now()), productId: pId, productName: prod.name, qty, price, total, supplier });
       }
-
-      triggerHaptic('success');
-      closePurchaseModal();
-      saveData();
+      closeModal('modal-purchase');
+      saveDB();
     }
 
-    function deletePurchase(purchaseId) {
-      const p = db.purchases.find(item => item.id === purchaseId);
-      if (!p) return;
-      if (confirm(`آیا از حذف این فاکتور خرید (${p.productName} - ${p.total.toLocaleString()} تومان) اطمینان دارید؟
-نکته: تعداد ${p.qty} عدد از موجودی انبار کسر خواهد شد.`)) {
-        const prod = db.products.find(item => item.id === p.productId);
-        if (prod) {
-          if (prod.stock < p.qty) {
-            if (!confirm('موجودی فعلی کالا کمتر از تعداد این خرید است. با حذف فاکتور موجودی منفی خواهد شد. ادامه می‌دهید؟')) {
-              return;
-            }
-          }
-          prod.stock -= Number(p.qty);
-        }
-        db.purchases = db.purchases.filter(item => item.id !== purchaseId);
-        triggerHaptic('warning');
-        showToast('فاکتور خرید حذف و موجودی انبار کسر گردید.');
-        saveData();
+    function deletePurchase(id) {
+      const b = db.purchases.find(x => x.id === id);
+      if (b && confirm('آیا فاکتور خرید حذف شود؟ (موجودی از انبار کسر خواهد شد)')) {
+        const prod = db.products.find(x => x.id === b.productId);
+        if (prod) prod.stock -= Number(b.qty);
+        db.purchases = db.purchases.filter(x => x.id !== id);
+        saveDB();
       }
     }
 
-    // ================== ناوبری بین تب‌ها ==================
-    function switchTab(tabName) {
-      const tabs = ['dashboard', 'inventory', 'sales', 'purchases', 'reports'];
-      tabs.forEach(t => {
-        const el = document.getElementById('tab-' + t);
-        const navBtn = document.getElementById('nav-' + t);
-        if (t === tabName) {
-          el.classList.remove('hidden');
-          navBtn.className = 'flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400';
-        } else {
-          el.classList.add('hidden');
-          navBtn.className = 'flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200';
-        }
-      });
-      triggerHaptic('impact');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    function updateSelectOptions() {
+      const opts = db.products.map(p => `<option value="${p.id}">${p.name} (موجودی: ${p.stock})</option>`).join('');
+      document.getElementById('s-product').innerHTML = opts;
+      document.getElementById('b-product').innerHTML = opts;
     }
 
-    // ================== تنظیمات و پشتیبان‌گیری ==================
-    function saveStoreSettings() {
-      const name = document.getElementById('setting-shop-name').value.trim();
-      if (name) {
-        db.settings.storeName = name;
-        document.getElementById('store-title').innerText = name;
-        saveData();
-        showToast('نام فروشگاه ذخیره شد.');
-        triggerHaptic('success');
+    function saveStoreName() {
+      const val = document.getElementById('store-name-input').value.trim();
+      if (val) {
+        db.name = val;
+        saveDB();
+        alert('نام فروشگاه ذخیره شد.');
       }
     }
 
-    function exportJSONBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-      const downloadAnchor = document.createElement('a');
-      const dateStr = new Date().toISOString().split('T')[0];
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `hesabdari_backup_${dateStr}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('فایل پشتیبان دانلود شد.');
-      triggerHaptic('success');
+    function exportDataJSON() {
+      const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'backup.json';
+      a.click();
     }
 
-    function importJSONBackup(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported.products && Array.isArray(imported.products)) {
-            if (confirm('آیا مایلید تمام داده‌های فعلی با فایل بکاپ جایگزین شوند؟')) {
-              db = imported;
-              saveData();
-              showToast('اطلاعات با موفقیت بازگردانی شد.');
-              triggerHaptic('success');
-            }
-          } else {
-            alert('فرمت فایل پشتیبان صحیح نیست.');
-          }
-        } catch (err) {
-          alert('خطا در خواندن فایل بکاپ!');
-        }
-      };
-      reader.readAsText(file);
+    function exportDataCSV() {
+      let csv = "\uFEFFنوع,نام کالا,تعداد,قیمت واحد,مبلغ کل\n";
+      db.products.forEach(p => { csv += `انبار,"${p.name}",${p.stock},${p.sell},${p.stock * p.sell}\n`; });
+      db.sales.forEach(s => { csv += `فروش,"${s.productName}",${s.qty},${s.price},${s.total}\n`; });
+      db.purchases.forEach(b => { csv += `خرید,"${b.productName}",${b.qty},${b.price},${b.total}\n`; });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'report.csv';
+      a.click();
     }
 
-    function exportCSVReport() {
-      let csvContent = "﻿"; // BOM برای پشتیبانی فارسی در اکسل
-      csvContent += "نوع,شناسه,نام کالا / مورد,تعداد,قیمت واحد (تومان),مبلغ کل (تومان),سود (تومان),طرف حساب,تاریخ
-";
-
-      // افزودن کالاها
-      db.products.forEach(p => {
-        csvContent += `"موجودی انبار","${p.id}","${p.name}","${p.stock}","${p.sellPrice}","${p.stock * p.sellPrice}","${(p.sellPrice - p.buyPrice) * p.stock}","${p.category || '-'}","-"
-`;
-      });
-
-      // افزودن فروش‌ها
-      db.sales.forEach(s => {
-        csvContent += `"فروش","${s.id}","${s.productName}","${s.qty}","${s.unitSellPrice}","${s.total}","${s.profit}","${s.customer || '-'}","${s.date}"
-`;
-      });
-
-      // افزودن خریدها
-      db.purchases.forEach(p => {
-        csvContent += `"خرید","${p.id}","${p.productName}","${p.qty}","${p.unitPrice}","${p.total}","0","${p.supplier || '-'}","${p.date}"
-`;
-      });
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `hesabdari_report_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      showToast('گزارش اکسل ایجاد و دانلود شد.');
-      triggerHaptic('success');
-    }
-
-    function resetAllData() {
-      const code = prompt('برای حذف کامل همه کالاها و فاکتورها، عدد 1234 را وارد کنید:');
-      if (code === '1234') {
-        db = {
-          settings: { storeName: 'فروشگاه حسابداری', currency: 'تومان' },
-          products: [],
-          sales: [],
-          purchases: []
-        };
-        saveData();
-        showToast('کلیه داده‌ها پاکسازی شدند.');
-        triggerHaptic('warning');
-      }
-    }
-
-    function openBackupModal() {
-      switchTab('reports');
-    }
-
-    // راه‌اندازی اولیه
-    window.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      setHeaderDate();
-      document.getElementById('setting-shop-name').value = db.settings?.storeName || '';
-    });
+    window.addEventListener('DOMContentLoaded', loadDB);
   </script>
 </body>
 </html>
